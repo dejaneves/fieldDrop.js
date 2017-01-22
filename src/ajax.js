@@ -1,3 +1,6 @@
+/**
+ * https://gist.github.com/hsnaydd/0d6061a8801222ccf0e6
+ */
 export default class Ajax {
   get(url, callback) {
     let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
