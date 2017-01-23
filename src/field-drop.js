@@ -1,11 +1,14 @@
 class FieldDrop {
 
-  constructor() {
-    this.getTest();
-  }
+  constructor(trigger) {
 
-  getTest(){
-    console.log('test');
+    if(!trigger){
+      throw new Error('error');
+    }
+
+    if(typeof trigger == 'string'){
+
+    }
   }
 
 }
