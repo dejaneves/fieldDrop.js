@@ -46,12 +46,19 @@ class FieldDrop {
       event.preventDefault();
     }, false);
 
-    dragDrop.addEventListener('dragenter', function( event ) {
-      dragDrop.classList.add('dragenter');
+    dragDrop.addEventListener('dragstart', ( event ) => {
+      console.log('dragstart ',event);
+      //dragDrop.classList.add('dragenter');
     }, false);
 
-    dragDrop.addEventListener('dragleave', function( event ) {
-      dragDrop.classList.remove('dragenter');
+    dragDrop.addEventListener('dragenter', ( event ) => {
+      console.log('dragenter ',event);
+      //dragDrop.classList.add('dragenter');
+    }, false);
+
+    dragDrop.addEventListener('dragleave', ( event ) => {
+      console.log('dragleave ',event);
+      //dragDrop.classList.remove('dragenter');
     }, false);
 
     dragDrop.addEventListener('drop', ( event ) => {

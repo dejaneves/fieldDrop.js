@@ -140,12 +140,19 @@ var FieldDrop = function () {
         event.preventDefault();
       }, false);
 
+      dragDrop.addEventListener('dragstart', function (event) {
+        console.log('dragstart ', event);
+        //dragDrop.classList.add('dragenter');
+      }, false);
+
       dragDrop.addEventListener('dragenter', function (event) {
-        dragDrop.classList.add('dragenter');
+        console.log('dragenter ', event);
+        //dragDrop.classList.add('dragenter');
       }, false);
 
       dragDrop.addEventListener('dragleave', function (event) {
-        dragDrop.classList.remove('dragenter');
+        console.log('dragleave ', event);
+        //dragDrop.classList.remove('dragenter');
       }, false);
 
       dragDrop.addEventListener('drop', function (event) {
