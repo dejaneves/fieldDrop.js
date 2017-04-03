@@ -17,7 +17,7 @@ app.listen(port,function(){
  */
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, __dirname + '/public/uploads/')
+    cb(null, __dirname + '/server/public/uploads/')
   },
   filename: function (req, file, cb) {
     var ext = file.originalname.substr(file.originalname.lastIndexOf('.') + 1);
@@ -26,6 +26,7 @@ var storage = multer.diskStorage({
 }); const upload = multer({ storage: storage });
 
 // Route
-app.post('/upload', upload.single('testFile'), function (req, res, next) {
+app.post('/upload', upload.single('file'), function (req, res, next) {
   console.log(req.file);
+  res.send('sucess');
 });

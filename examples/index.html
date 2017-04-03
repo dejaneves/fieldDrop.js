@@ -3,13 +3,49 @@
   <head>
     <meta charset="utf-8">
     <title>Example FieldDrop.js</title>
+    <style>
+      .container-drag-and-drop {
+        border: 3px dashed #ccc;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+        padding: 15px;
+        text-align: center;
+        /*border: 3px dashed #e5e6ea;
+        background-color: #eff0f2;
+        padding: 0px 0 10px 0;
+        opacity: 0.9;
+        z-index: 0;
+        text-align: center;
+        line-height: 100%;
+        font-weight: bold;
+        margin: auto;
+        box-sizing: border-box;
+        color: #4e4e4e;
+        min-height: 150px;
+        border-radius: 5px;*/
+      }
+      .container-drag-and-drop input[type="file"]{
+        border: 1px solid #ccc;
+        display: none;
+      }
+      .dragenter {
+        border: 3px dashed #00BCD4;
+      }
+    </style>
   </head>
   <body>
     <h1>Example FieldDrop.js</h1>
     <script type="text/javascript" src="../dist/field-drop.js"></script>
 
+    <div class="container-drag-and-drop" id="drag-and-drop">
+      <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File">
+      <input type="file" name="file" id="file-input">
+    </div>
+    <progress id="upload-progress" min="0" max="100" value="0">0</progress>
+
     <script>
-      var fieldDrop = new FieldDrop();
+      var fieldDrop = new FieldDrop('#drag-and-drop');
     </script>
 
   </body>
