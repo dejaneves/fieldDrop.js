@@ -9,9 +9,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * https://gist.github.com/hsnaydd/0d6061a8801222ccf0e6
- */
 var Ajax = function () {
   function Ajax() {
     _classCallCheck(this, Ajax);
@@ -138,21 +135,11 @@ var FieldDrop = function () {
       dragDrop.addEventListener('dragover', function (event) {
         event.stopPropagation();
         event.preventDefault();
-      }, false);
-
-      dragDrop.addEventListener('dragstart', function (event) {
-        console.log('dragstart ', event);
-        //dragDrop.classList.add('dragenter');
-      }, false);
-
-      dragDrop.addEventListener('dragenter', function (event) {
-        console.log('dragenter ', event);
-        //dragDrop.classList.add('dragenter');
+        dragDrop.classList.add('selected-area');
       }, false);
 
       dragDrop.addEventListener('dragleave', function (event) {
-        console.log('dragleave ', event);
-        //dragDrop.classList.remove('dragenter');
+        dragDrop.classList.remove('selected-area');
       }, false);
 
       dragDrop.addEventListener('drop', function (event) {

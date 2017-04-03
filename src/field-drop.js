@@ -44,21 +44,11 @@ class FieldDrop {
     dragDrop.addEventListener('dragover', ( event ) => {
       event.stopPropagation();
       event.preventDefault();
-    }, false);
-
-    dragDrop.addEventListener('dragstart', ( event ) => {
-      console.log('dragstart ',event);
-      //dragDrop.classList.add('dragenter');
-    }, false);
-
-    dragDrop.addEventListener('dragenter', ( event ) => {
-      console.log('dragenter ',event);
-      //dragDrop.classList.add('dragenter');
+      dragDrop.classList.add('selected-area');
     }, false);
 
     dragDrop.addEventListener('dragleave', ( event ) => {
-      console.log('dragleave ',event);
-      //dragDrop.classList.remove('dragenter');
+      dragDrop.classList.remove('selected-area');
     }, false);
 
     dragDrop.addEventListener('drop', ( event ) => {
