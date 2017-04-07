@@ -7,6 +7,9 @@ class FieldDrop {
     this.containerDragAndDrop = null;
     this.inputFile = null;
     this.ajax = new Ajax;
+    this.classImageContainer = '.drag-and-drop__image';
+    this.classImageBody = '.drag-and-drop__image__body';
+    this.classContentContainer = '.drag-and-drop__content';
 
     this.trigger = {
       selector: 'input[type="file"]',
@@ -34,7 +37,7 @@ class FieldDrop {
 
   inputFileEvent(){
     this.inputFile.addEventListener('change',(event) => {
-      this.sendFile(event.target.files);
+      this.workPhoto(event.target.files);
     });
   }
 
@@ -54,11 +57,36 @@ class FieldDrop {
     dragDrop.addEventListener('drop', ( event ) => {
       event.stopPropagation();
       event.preventDefault();
-
-      let dataFile = event.dataTransfer.files;
-      this.sendFile(dataFile);
-
+      this.workPhoto(event.dataTransfer.files);
     }, false);
+  }
+
+  workPhoto(files) {
+    this.renderPhoto(files[0]);
+    this.sendFile(files);
+  }
+
+  renderPhoto(file) {
+    let imageType = /image.*/,
+        reader = new FileReader(),
+        img = new Image(),
+        imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
+        imageBody = this.containerDragAndDrop.querySelector(this.classImageBody);
+
+
+    if (file.type.match(imageType)) {
+      reader.onload = function(e) {
+        img.src = reader.result;
+        imageBody.innerHTML = "";
+        imageBody.appendChild(img);
+      }
+    }
+    reader.readAsDataURL(file);
+    this.hideContenContainer();
+  }
+
+  hideContenContainer(){
+    this.containerDragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
   }
 
   sendFile(files) {

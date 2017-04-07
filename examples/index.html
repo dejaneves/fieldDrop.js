@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Example FieldDrop.js</title>
     <style>
-      .drag-and-drop-inner {
+      .drag-and-drop {
         border: 3px dashed #ccc;
         background: #F5F5F5;
         margin-left: auto;
@@ -16,7 +16,7 @@
       .selected-area {
         border: 3px dashed #00BCD4;
       }
-      .drag-and-drop-inner input[type='button']{
+      .drag-and-drop input[type='button']{
         display: inline-block;
         padding: 6px 12px;
         margin-bottom: 0;
@@ -40,12 +40,15 @@
         background-color: #fff;
         border-color: #ccc;
       }
-      .drag-and-drop-inner input[type='button']:hover {
+      .drag-and-drop img {
+        width: 100%;
+      }
+      .drag-and-drop input[type='button']:hover {
         color: #333;
         background-color: #d9d9d9;
         border-color: #8c8c8c;
       }
-      .drag-and-drop-inner .drag-and-drop-info .title{
+      .drag-and-drop .drag-and-drop-info .title{
         line-height: 40px;
         display: block;
         width: 100%;
@@ -54,7 +57,7 @@
         font-weight: normal;
         font-size: 1.4em;
       }
-      .drag-and-drop-inner .drag-and-drop-info .icon{
+      .drag-and-drop .drag-and-drop-info .icon{
         font-size: 42px;
         display: block;
         width: 100%;
@@ -62,26 +65,33 @@
         margin: 0;
         padding: 0;
       }
-
+      .drag-and-drop .hide{
+        display: none;
+      }
     </style>
   </head>
   <body>
     <h1>Example FieldDrop.js</h1>
     <script type="text/javascript" src="../dist/field-drop.js"></script>
 
-    <div class="drag-and-drop-inner" id="drag-and-drop">
-      <div class="drag-and-drop-info">
-        <span class="title">Drop files here</span>
-        <span class="icon"></span>
+    <div class="drag-and-drop" id="image-drag-drop">
+      <div class="drag-and-drop__content">
+        <div class="drag-and-drop-info">
+          <span class="title">Drop files here</span>
+          <span class="icon"></span>
+        </div>
+        <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File ...">
+        <input type="file" name="file" id="file-input" style="display:none">
       </div>
-      <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File ...">
-      <input type="file" name="file" id="file-input" style="display:none">
+      <div class="drag-and-drop__image">
+        <div class="drag-and-drop__image__body"></div>
+      </div>
     </div>
+
     <progress id="upload-progress" min="0" max="100" value="0">0</progress>
 
     <script>
-      var fieldDrop = new FieldDrop('#drag-and-drop');
+      var fieldDrop = new FieldDrop('#image-drag-drop');
     </script>
-
   </body>
 </html>

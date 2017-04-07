@@ -91,6 +91,9 @@ var FieldDrop = function () {
     this.containerDragAndDrop = null;
     this.inputFile = null;
     this.ajax = new _ajax2.default();
+    this.classImageContainer = '.drag-and-drop__image';
+    this.classImageBody = '.drag-and-drop__image__body';
+    this.classContentContainer = '.drag-and-drop__content';
 
     this.trigger = {
       selector: 'input[type="file"]',
@@ -122,7 +125,7 @@ var FieldDrop = function () {
       var _this = this;
 
       this.inputFile.addEventListener('change', function (event) {
-        _this.sendFile(event.target.files);
+        _this.workPhoto(event.target.files);
       });
     }
   }, {
@@ -145,10 +148,38 @@ var FieldDrop = function () {
       dragDrop.addEventListener('drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
-
-        var dataFile = event.dataTransfer.files;
-        _this2.sendFile(dataFile);
+        _this2.workPhoto(event.dataTransfer.files);
       }, false);
+    }
+  }, {
+    key: 'workPhoto',
+    value: function workPhoto(files) {
+      this.renderPhoto(files[0]);
+      this.sendFile(files);
+    }
+  }, {
+    key: 'renderPhoto',
+    value: function renderPhoto(file) {
+      var imageType = /image.*/,
+          reader = new FileReader(),
+          img = new Image(),
+          imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
+          imageBody = this.containerDragAndDrop.querySelector(this.classImageBody);
+
+      if (file.type.match(imageType)) {
+        reader.onload = function (e) {
+          img.src = reader.result;
+          imageBody.innerHTML = "";
+          imageBody.appendChild(img);
+        };
+      }
+      reader.readAsDataURL(file);
+      this.hideContenContainer();
+    }
+  }, {
+    key: 'hideContenContainer',
+    value: function hideContenContainer() {
+      this.containerDragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
     }
   }, {
     key: 'sendFile',
