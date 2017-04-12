@@ -91,9 +91,12 @@ var FieldDrop = function () {
     this.containerDragAndDrop = null;
     this.inputFile = null;
     this.ajax = new _ajax2.default();
+
+    // Element Class
     this.classImageContainer = '.drag-and-drop__image';
     this.classImageBody = '.drag-and-drop__image__body';
     this.classContentContainer = '.drag-and-drop__content';
+    this.classContainerUploads = '.drag-and-drop__uploads';
 
     this.trigger = {
       selector: 'input[type="file"]',
@@ -117,15 +120,28 @@ var FieldDrop = function () {
     key: 'init',
     value: function init() {
       this.dragAndDropEvent();
-      this.inputFileEvent();
+      this.bindEvent();
     }
   }, {
-    key: 'inputFileEvent',
-    value: function inputFileEvent() {
+    key: 'bindEvent',
+    value: function bindEvent() {
       var _this = this;
 
       this.inputFile.addEventListener('change', function (event) {
         _this.workPhoto(event.target.files);
+      });
+
+      var containerDragAndDrop = this.containerDragAndDrop,
+          btnDelete = containerDragAndDrop.querySelector('.uploads-item__actions');
+
+      btnDelete.addEventListener('click', function (event) {
+        event.preventDefault();
+        var el = event.target;
+        el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
+        el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
+        el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
+
+        containerDragAndDrop.querySelector(_this.classImageContainer).querySelector('img').remove();
       });
     }
   }, {
@@ -164,13 +180,19 @@ var FieldDrop = function () {
           reader = new FileReader(),
           img = new Image(),
           imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
-          imageBody = this.containerDragAndDrop.querySelector(this.classImageBody);
+          imageBody = this.containerDragAndDrop.querySelector(this.classImageBody),
+          containerUploads = this.containerDragAndDrop.querySelector(this.classContainerUploads),
+          fileSize = this.humanFileSize(file.size);
 
       if (file.type.match(imageType)) {
         reader.onload = function (e) {
           img.src = reader.result;
           imageBody.innerHTML = "";
           imageBody.appendChild(img);
+          // Uploads
+          containerUploads.querySelector('.uploads-item__file--name').innerHTML = file.name;
+          containerUploads.querySelector('.uploads-item__file--info').innerHTML = fileSize;
+          containerUploads.setAttribute('id', file.name);
         };
       }
       reader.readAsDataURL(file);
@@ -205,6 +227,12 @@ var FieldDrop = function () {
       xhr.onload = function () {
         progress.value = progress.innerHTML = 100;
       };
+    }
+  }, {
+    key: 'humanFileSize',
+    value: function humanFileSize(size) {
+      var i = Math.floor(Math.log(size) / Math.log(1024));
+      return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     }
   }]);
 

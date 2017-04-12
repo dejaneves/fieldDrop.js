@@ -26,13 +26,7 @@
         text-align: center;
         white-space: nowrap;
         vertical-align: middle;
-        -ms-touch-action: manipulation;
-        touch-action: manipulation;
         cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
         background-image: none;
         border: 1px solid transparent;
         border-radius: 4px;
@@ -68,6 +62,29 @@
       .drag-and-drop .hide{
         display: none;
       }
+      .drag-and-drop__uploads .uploads-item {
+        margin: 15px 0 0px 0;
+        cursor: default;
+        clear: both;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__file--name {
+        font-weight: bold;
+        padding: 1px 10px 1px 5px;
+        line-height: 32px;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__file--info {
+        color: #666;
+        font-size: 14px;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__actions > a {
+        visibility: hidden;
+        height: 32px;
+        width: 22px;
+        padding: 0 10px;
+      }
+      .drag-and-drop__uploads .uploads-item:hover .uploads-item__actions > a {
+        visibility: visible;
+      }
     </style>
   </head>
   <body>
@@ -85,6 +102,15 @@
       </div>
       <div class="drag-and-drop__image">
         <div class="drag-and-drop__image__body"></div>
+      </div>
+      <div class="drag-and-drop__uploads">
+        <div class="uploads-item">
+          <span class="uploads-item__file--name"></span>
+          <span class="uploads-item__file--info"></span>
+          <span class="uploads-item__actions">
+            <a href="#" class="delete" title="Delete">Excluir</a>
+          </span>
+        </div>
       </div>
     </div>
 
