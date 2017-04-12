@@ -39,20 +39,20 @@ class FieldDrop {
   }
 
   bindEvent() {
-    this.inputFile.addEventListener('change',(event) => {
+    let containerDragAndDrop  = this.containerDragAndDrop,
+        el_BtnDelete          = containerDragAndDrop.querySelector('.uploads-item__actions'),
+        el_InputFile          = this.inputFile;
+
+    el_InputFile.addEventListener('change',(event) => {
       this.workPhoto(event.target.files);
     });
 
-    let containerDragAndDrop = this.containerDragAndDrop,
-        btnDelete = containerDragAndDrop.querySelector('.uploads-item__actions');
-
-    btnDelete.addEventListener('click',(event) => {
+    el_BtnDelete.addEventListener('click',(event) => {
       event.preventDefault();
       let el = event.target;
       el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
       el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
       el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
-
       containerDragAndDrop.querySelector(this.classImageContainer).querySelector('img').remove();
     });
   }

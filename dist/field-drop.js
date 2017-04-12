@@ -127,20 +127,20 @@ var FieldDrop = function () {
     value: function bindEvent() {
       var _this = this;
 
-      this.inputFile.addEventListener('change', function (event) {
+      var containerDragAndDrop = this.containerDragAndDrop,
+          el_BtnDelete = containerDragAndDrop.querySelector('.uploads-item__actions'),
+          el_InputFile = this.inputFile;
+
+      el_InputFile.addEventListener('change', function (event) {
         _this.workPhoto(event.target.files);
       });
 
-      var containerDragAndDrop = this.containerDragAndDrop,
-          btnDelete = containerDragAndDrop.querySelector('.uploads-item__actions');
-
-      btnDelete.addEventListener('click', function (event) {
+      el_BtnDelete.addEventListener('click', function (event) {
         event.preventDefault();
         var el = event.target;
         el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
         el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
         el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
-
         containerDragAndDrop.querySelector(_this.classImageContainer).querySelector('img').remove();
       });
     }
