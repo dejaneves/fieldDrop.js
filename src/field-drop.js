@@ -8,6 +8,12 @@ class FieldDrop {
     this.inputFile = null;
     this.ajax = new Ajax;
 
+    // Element Class
+    this.classImageContainer    = '.drag-and-drop__image';
+    this.classImageBody         = '.drag-and-drop__image__body';
+    this.classContentContainer  = '.drag-and-drop__content';
+    this.classContainerUploads  = '.drag-and-drop__uploads';
+
     this.trigger = {
       selector: 'input[type="file"]',
       eventListener: 'change'
@@ -29,12 +35,25 @@ class FieldDrop {
 
   init() {
     this.dragAndDropEvent();
-    this.inputFileEvent();
+    this.bindEvent();
   }
 
-  inputFileEvent(){
-    this.inputFile.addEventListener('change',(event) => {
-      this.sendFile(event.target.files);
+  bindEvent() {
+    let containerDragAndDrop  = this.containerDragAndDrop,
+        el_BtnDelete          = containerDragAndDrop.querySelector('.uploads-item__actions'),
+        el_InputFile          = this.inputFile;
+
+    el_InputFile.addEventListener('change',(event) => {
+      this.workPhoto(event.target.files);
+    });
+
+    el_BtnDelete.addEventListener('click',(event) => {
+      event.preventDefault();
+      let el = event.target;
+      el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
+      el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
+      el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
+      containerDragAndDrop.querySelector(this.classImageContainer).querySelector('img').remove();
     });
   }
 
@@ -44,24 +63,51 @@ class FieldDrop {
     dragDrop.addEventListener('dragover', ( event ) => {
       event.stopPropagation();
       event.preventDefault();
+      dragDrop.classList.add('selected-area');
     }, false);
 
-    dragDrop.addEventListener('dragenter', function( event ) {
-      dragDrop.classList.add('dragenter');
-    }, false);
-
-    dragDrop.addEventListener('dragleave', function( event ) {
-      dragDrop.classList.remove('dragenter');
+    dragDrop.addEventListener('dragleave', ( event ) => {
+      dragDrop.classList.remove('selected-area');
     }, false);
 
     dragDrop.addEventListener('drop', ( event ) => {
       event.stopPropagation();
       event.preventDefault();
-
-      let dataFile = event.dataTransfer.files;
-      this.sendFile(dataFile);
-
+      this.workPhoto(event.dataTransfer.files);
     }, false);
+  }
+
+  workPhoto(files) {
+    this.renderPhoto(files[0]);
+    this.sendFile(files);
+  }
+
+  renderPhoto(file) {
+    let imageType = /image.*/,
+        reader = new FileReader(),
+        img = new Image(),
+        imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
+        imageBody = this.containerDragAndDrop.querySelector(this.classImageBody),
+        containerUploads = this.containerDragAndDrop.querySelector(this.classContainerUploads),
+        fileSize = this.humanFileSize(file.size);
+
+    if (file.type.match(imageType)) {
+      reader.onload = function(e) {
+        img.src = reader.result;
+        imageBody.innerHTML = "";
+        imageBody.appendChild(img);
+        // Uploads
+        containerUploads.querySelector('.uploads-item__file--name').innerHTML = file.name;
+        containerUploads.querySelector('.uploads-item__file--info').innerHTML = fileSize;
+        containerUploads.setAttribute('id',file.name);
+      }
+    }
+    reader.readAsDataURL(file);
+    this.hideContenContainer();
+  }
+
+  hideContenContainer() {
+    this.containerDragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
   }
 
   sendFile(files) {
@@ -87,6 +133,11 @@ class FieldDrop {
       progress.value = progress.innerHTML = 100;
     };
 
+  }
+
+  humanFileSize(size) {
+    let i = Math.floor( Math.log(size) / Math.log(1024) );
+    return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
   }
 
 }

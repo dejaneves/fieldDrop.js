@@ -4,33 +4,86 @@
     <meta charset="utf-8">
     <title>Example FieldDrop.js</title>
     <style>
-      .container-drag-and-drop {
+      .drag-and-drop {
         border: 3px dashed #ccc;
+        background: #F5F5F5;
         margin-left: auto;
         margin-right: auto;
         width: 500px;
         padding: 15px;
         text-align: center;
-        /*border: 3px dashed #e5e6ea;
-        background-color: #eff0f2;
-        padding: 0px 0 10px 0;
-        opacity: 0.9;
-        z-index: 0;
-        text-align: center;
-        line-height: 100%;
-        font-weight: bold;
-        margin: auto;
-        box-sizing: border-box;
-        color: #4e4e4e;
-        min-height: 150px;
-        border-radius: 5px;*/
       }
-      .container-drag-and-drop input[type="file"]{
-        border: 1px solid #ccc;
+      .selected-area {
+        border: 3px dashed #00BCD4;
+      }
+      .drag-and-drop input[type='button']{
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+      }
+      .drag-and-drop img {
+        width: 100%;
+      }
+      .drag-and-drop input[type='button']:hover {
+        color: #333;
+        background-color: #d9d9d9;
+        border-color: #8c8c8c;
+      }
+      .drag-and-drop .drag-and-drop-info .title{
+        line-height: 40px;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        font-weight: normal;
+        font-size: 1.4em;
+      }
+      .drag-and-drop .drag-and-drop-info .icon{
+        font-size: 42px;
+        display: block;
+        width: 100%;
+        height: 65px;
+        margin: 0;
+        padding: 0;
+      }
+      .drag-and-drop .hide{
         display: none;
       }
-      .dragenter {
-        border: 3px dashed #00BCD4;
+      .drag-and-drop__uploads .uploads-item {
+        margin: 15px 0 0px 0;
+        cursor: default;
+        clear: both;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__file--name {
+        font-weight: bold;
+        padding: 1px 10px 1px 5px;
+        line-height: 32px;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__file--info {
+        color: #666;
+        font-size: 14px;
+      }
+      .drag-and-drop__uploads .uploads-item .uploads-item__actions > a {
+        visibility: hidden;
+        height: 32px;
+        width: 22px;
+        padding: 0 10px;
+      }
+      .drag-and-drop__uploads .uploads-item:hover .uploads-item__actions > a {
+        visibility: visible;
       }
     </style>
   </head>
@@ -38,15 +91,33 @@
     <h1>Example FieldDrop.js</h1>
     <script type="text/javascript" src="../dist/field-drop.js"></script>
 
-    <div class="container-drag-and-drop" id="drag-and-drop">
-      <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File">
-      <input type="file" name="file" id="file-input">
+    <div class="drag-and-drop" id="image-drag-drop">
+      <div class="drag-and-drop__content">
+        <div class="drag-and-drop-info">
+          <span class="title">Drop files here</span>
+          <span class="icon"></span>
+        </div>
+        <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File ...">
+        <input type="file" name="file" id="file-input" style="display:none">
+      </div>
+      <div class="drag-and-drop__image">
+        <div class="drag-and-drop__image__body"></div>
+      </div>
+      <div class="drag-and-drop__uploads">
+        <div class="uploads-item">
+          <span class="uploads-item__file--name"></span>
+          <span class="uploads-item__file--info"></span>
+          <span class="uploads-item__actions">
+            <a href="#" class="delete" title="Delete">Excluir</a>
+          </span>
+        </div>
+      </div>
     </div>
+
     <progress id="upload-progress" min="0" max="100" value="0">0</progress>
 
     <script>
-      var fieldDrop = new FieldDrop('#drag-and-drop');
+      var fieldDrop = new FieldDrop('#image-drag-drop');
     </script>
-
   </body>
 </html>
