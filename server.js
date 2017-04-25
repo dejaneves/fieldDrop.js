@@ -28,5 +28,5 @@ var storage = multer.diskStorage({
 // Route
 app.post('/upload', upload.single('file'), function (req, res, next) {
   console.log(req.file);
-  res.send('sucess');
+  res.send(req.file.filename);
 });

@@ -94,7 +94,7 @@ var FieldDrop = function () {
     this.trigger = null;
     this.ajax = new _ajax2.default();
     this.defaults = {
-      serverUrl: '',
+      urlUpload: '',
       selector: 'input[type="file"]',
       eventListener: 'change'
     };
@@ -215,7 +215,7 @@ var FieldDrop = function () {
 
       formData.append("file", files[0]);
 
-      var xhr = this.ajax.postUpload('/upload', formData, function (res) {
+      var xhr = this.ajax.postUpload(this.defaults.urlUpload, formData, function (res) {
         return res;
       });
 

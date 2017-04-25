@@ -8,7 +8,7 @@ class FieldDrop {
     this.trigger = null;
     this.ajax = new Ajax;
     this.defaults = {
-      serverUrl : '',
+      urlUpload : '',
       selector: 'input[type="file"]',
       eventListener: 'change'
     };
@@ -42,7 +42,8 @@ class FieldDrop {
   }
 
   bindEvent() {
-    let containerDragAndDrop = this.DragAndDrop, btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
+    let containerDragAndDrop = this.DragAndDrop,
+        btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
 
     this.trigger.addEventListener('change',(event) => {
       this.workPhoto(event.target.files);
@@ -117,7 +118,7 @@ class FieldDrop {
 
     formData.append("file", files[0]);
 
-    var xhr = this.ajax.postUpload('/upload',formData,(res) => {
+    var xhr = this.ajax.postUpload(this.defaults.urlUpload,formData,(res) => {
       return res;
     });
 
