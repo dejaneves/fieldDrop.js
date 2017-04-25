@@ -4,9 +4,14 @@ class FieldDrop {
 
   constructor(container,options) {
 
-    this.containerDragAndDrop = null;
-    this.inputFile = null;
+    this.DragAndDrop = null;
+    this.trigger = null;
     this.ajax = new Ajax;
+    this.defaults = {
+      serverUrl : '',
+      selector: 'input[type="file"]',
+      eventListener: 'change'
+    };
 
     // Element Class
     this.classImageContainer    = '.drag-and-drop__image';
@@ -14,21 +19,19 @@ class FieldDrop {
     this.classContentContainer  = '.drag-and-drop__content';
     this.classContainerUploads  = '.drag-and-drop__uploads';
 
-    this.trigger = {
-      selector: 'input[type="file"]',
-      eventListener: 'change'
-    };
-
-    if(typeof container == 'string') {
-      this.containerDragAndDrop = document.querySelector(container);
-      this.inputFile = this.containerDragAndDrop.querySelector('input[type="file"]');
-    }
-
     if(!container) {
       throw new Error('error');
     }
 
-    this.trigger.selector = document.querySelector(this.trigger.selector);
+    if(typeof container == 'string') {
+      this.DragAndDrop = document.querySelector(container);
+    }
+
+    if (typeof options === 'object') {
+      this.defaults = Object.assign({}, this.defaults, options)
+    }
+
+    this.trigger = this.DragAndDrop.querySelector(this.defaults.selector);
     this.init();
 
   }
@@ -39,15 +42,13 @@ class FieldDrop {
   }
 
   bindEvent() {
-    let containerDragAndDrop  = this.containerDragAndDrop,
-        el_BtnDelete          = containerDragAndDrop.querySelector('.uploads-item__actions'),
-        el_InputFile          = this.inputFile;
+    let containerDragAndDrop = this.DragAndDrop, btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
 
-    el_InputFile.addEventListener('change',(event) => {
+    this.trigger.addEventListener('change',(event) => {
       this.workPhoto(event.target.files);
     });
 
-    el_BtnDelete.addEventListener('click',(event) => {
+    btnDelete.addEventListener('click',(event) => {
       event.preventDefault();
       let el = event.target;
       el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
@@ -58,7 +59,7 @@ class FieldDrop {
   }
 
   dragAndDropEvent() {
-    let dragDrop = this.containerDragAndDrop;
+    let dragDrop = this.DragAndDrop;
 
     dragDrop.addEventListener('dragover', ( event ) => {
       event.stopPropagation();
@@ -86,9 +87,9 @@ class FieldDrop {
     let imageType = /image.*/,
         reader = new FileReader(),
         img = new Image(),
-        imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
-        imageBody = this.containerDragAndDrop.querySelector(this.classImageBody),
-        containerUploads = this.containerDragAndDrop.querySelector(this.classContainerUploads),
+        imageContainer = this.DragAndDrop.querySelector(this.classImageContainer),
+        imageBody = this.DragAndDrop.querySelector(this.classImageBody),
+        containerUploads = this.DragAndDrop.querySelector(this.classContainerUploads),
         fileSize = this.humanFileSize(file.size);
 
     if (file.type.match(imageType)) {
@@ -107,7 +108,7 @@ class FieldDrop {
   }
 
   hideContenContainer() {
-    this.containerDragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
+    this.DragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
   }
 
   sendFile(files) {

@@ -117,7 +117,12 @@
     <progress id="upload-progress" min="0" max="100" value="0">0</progress>
 
     <script>
-      var fieldDrop = new FieldDrop('#image-drag-drop');
+      var fieldDrop = new FieldDrop('#image-drag-drop',{
+        serverUrl:'/uploads'
+      });
+
+
+
     </script>
   </body>
 </html>
