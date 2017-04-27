@@ -30,3 +30,5 @@ app.post('/upload', upload.single('file'), function (req, res, next) {
   console.log(req.file);
   res.send(req.file.filename);
 });
+
+//app.post('/upload_delete')

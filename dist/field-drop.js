@@ -57,6 +57,8 @@ var Ajax = function () {
       xhr.onreadystatechange = function () {
         if (xhr.readyState > 3 && xhr.status === 200) {
           callback(xhr.responseText);
+        } else {
+          callback(xhr);
         }
       };
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -87,14 +89,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var FieldDrop = function () {
-  function FieldDrop(container, options) {
+  function FieldDrop(element, options) {
     _classCallCheck(this, FieldDrop);
 
     this.DragAndDrop = null;
     this.trigger = null;
     this.ajax = new _ajax2.default();
     this.defaults = {
-      urlUpload: '',
+      url: '',
       selector: 'input[type="file"]',
       eventListener: 'change'
     };
@@ -105,12 +107,12 @@ var FieldDrop = function () {
     this.classContentContainer = '.drag-and-drop__content';
     this.classContainerUploads = '.drag-and-drop__uploads';
 
-    if (!container) {
+    if (!element) {
       throw new Error('error');
     }
 
-    if (typeof container == 'string') {
-      this.DragAndDrop = document.querySelector(container);
+    if (typeof element == 'string') {
+      this.DragAndDrop = document.querySelector(element);
     }
 
     if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
@@ -124,7 +126,6 @@ var FieldDrop = function () {
   _createClass(FieldDrop, [{
     key: 'init',
     value: function init() {
-      this.dragAndDropEvent();
       this.bindEvent();
     }
   }, {
@@ -132,7 +133,7 @@ var FieldDrop = function () {
     value: function bindEvent() {
       var _this = this;
 
-      var containerDragAndDrop = this.DragAndDrop,
+      var dragDrop = this.DragAndDrop,
           btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
 
       this.trigger.addEventListener('change', function (event) {
@@ -145,15 +146,11 @@ var FieldDrop = function () {
         el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
         el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
         el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
-        containerDragAndDrop.querySelector(_this.classImageContainer).querySelector('img').remove();
+        dragDrop.querySelector(_this.classImageContainer).querySelector('img').remove();
+        dragDrop.querySelector(_this.classContentContainer).classList.remove('hide');
       });
-    }
-  }, {
-    key: 'dragAndDropEvent',
-    value: function dragAndDropEvent() {
-      var _this2 = this;
 
-      var dragDrop = this.DragAndDrop;
+      // Drag and Drop Events
 
       dragDrop.addEventListener('dragover', function (event) {
         event.stopPropagation();
@@ -168,7 +165,7 @@ var FieldDrop = function () {
       dragDrop.addEventListener('drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
-        _this2.workPhoto(event.dataTransfer.files);
+        _this.workPhoto(event.dataTransfer.files);
       }, false);
     }
   }, {
@@ -210,12 +207,16 @@ var FieldDrop = function () {
   }, {
     key: 'sendFile',
     value: function sendFile(files) {
+      var _this2 = this;
+
       var formData = new FormData(),
           progress = document.querySelector('progress');
 
       formData.append("file", files[0]);
 
-      var xhr = this.ajax.postUpload(this.defaults.urlUpload, formData, function (res) {
+      var xhr = this.ajax.postUpload(this.defaults.url, formData, function (res) {
+        var btnDelete = _this2.DragAndDrop.querySelector('.uploads-item__actions > .delete');
+        btnDelete.setAttribute('id', res);
         return res;
       });
 

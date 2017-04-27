@@ -2,13 +2,13 @@ import Ajax from './ajax';
 
 class FieldDrop {
 
-  constructor(container,options) {
+  constructor(element,options) {
 
     this.DragAndDrop = null;
     this.trigger = null;
     this.ajax = new Ajax;
     this.defaults = {
-      urlUpload : '',
+      url : '',
       selector: 'input[type="file"]',
       eventListener: 'change'
     };
@@ -19,12 +19,12 @@ class FieldDrop {
     this.classContentContainer  = '.drag-and-drop__content';
     this.classContainerUploads  = '.drag-and-drop__uploads';
 
-    if(!container) {
+    if(!element) {
       throw new Error('error');
     }
 
-    if(typeof container == 'string') {
-      this.DragAndDrop = document.querySelector(container);
+    if(typeof element == 'string') {
+      this.DragAndDrop = document.querySelector(element);
     }
 
     if (typeof options === 'object') {
@@ -37,12 +37,11 @@ class FieldDrop {
   }
 
   init() {
-    this.dragAndDropEvent();
     this.bindEvent();
   }
 
   bindEvent() {
-    let containerDragAndDrop = this.DragAndDrop,
+    let dragDrop = this.DragAndDrop,
         btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
 
     this.trigger.addEventListener('change',(event) => {
@@ -55,12 +54,11 @@ class FieldDrop {
       el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
       el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
       el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
-      containerDragAndDrop.querySelector(this.classImageContainer).querySelector('img').remove();
+      dragDrop.querySelector(this.classImageContainer).querySelector('img').remove();
+      dragDrop.querySelector(this.classContentContainer).classList.remove('hide');
     });
-  }
 
-  dragAndDropEvent() {
-    let dragDrop = this.DragAndDrop;
+    // Drag and Drop Events
 
     dragDrop.addEventListener('dragover', ( event ) => {
       event.stopPropagation();
@@ -77,6 +75,7 @@ class FieldDrop {
       event.preventDefault();
       this.workPhoto(event.dataTransfer.files);
     }, false);
+
   }
 
   workPhoto(files) {
@@ -118,7 +117,9 @@ class FieldDrop {
 
     formData.append("file", files[0]);
 
-    var xhr = this.ajax.postUpload(this.defaults.urlUpload,formData,(res) => {
+    var xhr = this.ajax.postUpload(this.defaults.url,formData,(res) => {
+      let btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions > .delete');
+      btnDelete.setAttribute('id',res);
       return res;
     });
 

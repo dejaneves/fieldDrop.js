@@ -38,6 +38,8 @@ export default class Ajax {
     xhr.onreadystatechange = function() {
       if (xhr.readyState > 3 && xhr.status === 200) {
         callback(xhr.responseText);
+      } else {
+        callback(xhr);
       }
     };
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
