@@ -92,7 +92,7 @@ var FieldDrop = function () {
   function FieldDrop(element, options) {
     _classCallCheck(this, FieldDrop);
 
-    this.DragAndDrop = null;
+    this.element = element;
     this.trigger = null;
     this.ajax = new _ajax2.default();
     this.defaults = {
@@ -107,19 +107,23 @@ var FieldDrop = function () {
     this.classContentContainer = '.drag-and-drop__content';
     this.classContainerUploads = '.drag-and-drop__uploads';
 
-    if (!element) {
+    if (!this.element) {
       throw new Error('error');
     }
 
-    if (typeof element == 'string') {
-      this.DragAndDrop = document.querySelector(element);
+    if (typeof this.element === 'string') {
+      this.element = document.querySelector(this.element);
     }
 
     if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
-      this.defaults = Object.assign({}, this.defaults, options);
+      this.options = Object.assign({}, this.defaults, options);
+    } else {
+      this.options = this.defaults;
     }
 
-    this.trigger = this.DragAndDrop.querySelector(this.defaults.selector);
+    console.log(this.options);
+
+    this.trigger = this.element.querySelector(this.options.selector);
     this.init();
   }
 
@@ -133,8 +137,8 @@ var FieldDrop = function () {
     value: function bindEvent() {
       var _this = this;
 
-      var dragDrop = this.DragAndDrop,
-          btnDelete = this.DragAndDrop.querySelector('.uploads-item__actions');
+      var dragDrop = this.element,
+          btnDelete = this.element.querySelector('.uploads-item__actions');
 
       this.trigger.addEventListener('change', function (event) {
         _this.workPhoto(event.target.files);
@@ -152,17 +156,17 @@ var FieldDrop = function () {
 
       // Drag and Drop Events
 
-      dragDrop.addEventListener('dragover', function (event) {
+      this.element.addEventListener('dragover', function (event) {
         event.stopPropagation();
         event.preventDefault();
         dragDrop.classList.add('selected-area');
       }, false);
 
-      dragDrop.addEventListener('dragleave', function (event) {
+      this.element.addEventListener('dragleave', function (event) {
         dragDrop.classList.remove('selected-area');
       }, false);
 
-      dragDrop.addEventListener('drop', function (event) {
+      this.element.addEventListener('drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
         _this.workPhoto(event.dataTransfer.files);
@@ -180,9 +184,9 @@ var FieldDrop = function () {
       var imageType = /image.*/,
           reader = new FileReader(),
           img = new Image(),
-          imageContainer = this.DragAndDrop.querySelector(this.classImageContainer),
-          imageBody = this.DragAndDrop.querySelector(this.classImageBody),
-          containerUploads = this.DragAndDrop.querySelector(this.classContainerUploads),
+          imageContainer = this.element.querySelector(this.classImageContainer),
+          imageBody = this.element.querySelector(this.classImageBody),
+          containerUploads = this.element.querySelector(this.classContainerUploads),
           fileSize = this.humanFileSize(file.size);
 
       if (file.type.match(imageType)) {
@@ -202,7 +206,7 @@ var FieldDrop = function () {
   }, {
     key: 'hideContenContainer',
     value: function hideContenContainer() {
-      this.DragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
+      this.element.querySelector(this.classContentContainer).classList.add('hide');
     }
   }, {
     key: 'sendFile',
@@ -214,8 +218,8 @@ var FieldDrop = function () {
 
       formData.append("file", files[0]);
 
-      var xhr = this.ajax.postUpload(this.defaults.url, formData, function (res) {
-        var btnDelete = _this2.DragAndDrop.querySelector('.uploads-item__actions > .delete');
+      var xhr = this.ajax.postUpload(this.options.url, formData, function (res) {
+        var btnDelete = _this2.element.querySelector('.uploads-item__actions > .delete');
         btnDelete.setAttribute('id', res);
         return res;
       });

@@ -1,7 +1,9 @@
 const express = require('express');
 const serveStatic = require('serve-static');
 const multer = require('multer');
+const fs = require('fs');
 const app = express();
+
 
 const client = '/';
 const port = process.env.PORT || 8081;
@@ -12,9 +14,7 @@ app.listen(port,function(){
 });
 
 
-/**
- * Uploads
- */
+// Uploads
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, __dirname + '/server/public/uploads/')
@@ -25,10 +25,21 @@ var storage = multer.diskStorage({
   }
 }); const upload = multer({ storage: storage });
 
-// Route
+// Route upload file
 app.post('/upload', upload.single('file'), function (req, res, next) {
   console.log(req.file);
   res.send(req.file.filename);
 });
 
-//app.post('/upload_delete')
+// Route delete file
+app.get('/deleteFile/:filename',function(req, res) {
+  var filename = req.params.filename;
+
+  fs.unlink(__dirname + '/server/public/uploads/' + filename, function(err) {
+    if(err)
+      return res.send(false);
+
+    return res.send(true);
+
+  });
+});
