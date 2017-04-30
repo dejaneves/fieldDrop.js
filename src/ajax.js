@@ -32,12 +32,14 @@ export default class Ajax {
     return xhr;
   }
 
-  postUpload(url, data, callback) {
+  upload(url, data, callback) {
     let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
     xhr.open('POST', url);
     xhr.onreadystatechange = function() {
       if (xhr.readyState > 3 && xhr.status === 200) {
         callback(xhr.responseText);
+      } else {
+        callback(xhr);
       }
     };
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

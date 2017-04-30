@@ -50,13 +50,15 @@ var Ajax = function () {
       return xhr;
     }
   }, {
-    key: 'postUpload',
-    value: function postUpload(url, data, callback) {
+    key: 'upload',
+    value: function upload(url, data, callback) {
       var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
       xhr.open('POST', url);
       xhr.onreadystatechange = function () {
         if (xhr.readyState > 3 && xhr.status === 200) {
           callback(xhr.responseText);
+        } else {
+          callback(xhr);
         }
       };
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -74,6 +76,8 @@ exports.default = Ajax;
 },{}],2:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _ajax = require('./ajax');
@@ -85,86 +89,149 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var FieldDrop = function () {
-  function FieldDrop(container, options) {
+  function FieldDrop(element, options) {
     _classCallCheck(this, FieldDrop);
 
-    this.containerDragAndDrop = null;
-    this.inputFile = null;
+    this.element = element;
+    this.trigger = null;
     this.ajax = new _ajax2.default();
-
-    // Element Class
-    this.classImageContainer = '.drag-and-drop__image';
-    this.classImageBody = '.drag-and-drop__image__body';
-    this.classContentContainer = '.drag-and-drop__content';
-    this.classContainerUploads = '.drag-and-drop__uploads';
-
-    this.trigger = {
+    this.defaults = {
+      url: '',
       selector: 'input[type="file"]',
       eventListener: 'change'
     };
 
-    if (typeof container == 'string') {
-      this.containerDragAndDrop = document.querySelector(container);
-      this.inputFile = this.containerDragAndDrop.querySelector('input[type="file"]');
-    }
+    // Element Class
+    this.fieldDrop_content = '.field-drop--content';
+    this.fieldDrop_uploads = '.field-drop--uploads';
 
-    if (!container) {
+    if (!this.element) {
       throw new Error('error');
     }
 
-    this.trigger.selector = document.querySelector(this.trigger.selector);
+    if (typeof this.element === 'string') {
+      this.element = document.querySelector(this.element);
+    }
+
+    if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
+      this.options = Object.assign({}, this.defaults, options);
+    } else {
+      this.options = this.defaults;
+    }
+
+    console.log(this.options);
+
     this.init();
   }
 
   _createClass(FieldDrop, [{
     key: 'init',
     value: function init() {
-      this.dragAndDropEvent();
+      this.mountTemplate();
       this.bindEvent();
+    }
+  }, {
+    key: 'mountTemplate',
+    value: function mountTemplate() {
+
+      // Div Contents
+      var divContent = document.createElement('div');
+      divContent.setAttribute('class', this.fieldDrop_content.replace('.', ''));
+
+      divContent.innerHTML = '' + '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>' + '<input type="button" id="fake-button" onclick="document.getElementById("file-input").click();" value="Select File ..."> ' + '<input type="file" name="file" id="file-input" style="display:none">';
+
+      // Div Uploads
+      var divUpload = document.createElement('div');
+      divUpload.setAttribute('class', this.fieldDrop_uploads.replace('.', ''));
+
+      // Div Progress
+      var divProgress = document.createElement('progress');
+      divProgress.setAttribute('id', 'upload-progress');
+      divProgress.setAttribute('min', 0);
+      divProgress.setAttribute('max', 100);
+      divProgress.setAttribute('value', 0);
+      divProgress.innerHTML = '0';
+
+      // render
+      this.element.appendChild(divContent);
+      this.element.appendChild(divUpload);
+      this.element.appendChild(divProgress);
+
+      // Get Element
+      this.trigger = this.element.querySelector(this.options.selector);
+    }
+  }, {
+    key: 'actionsMovement',
+    value: function actionsMovement(filename, type) {
+      //let items = this.element.querySelector(this.fieldDrop_uploads).querySelectorAll('.uploads-item');
+
+      // if(filename === items[0].getAttribute('id')) {
+      //   if(type === 'show')
+      //     items[0].querySelector('.uploads-item__actions .delete').classList.remove('hide')
+      //   else if(type === 'hide')
+      //     items[0].querySelector('.uploads-item__actions .delete').classList.add('hide')
+      // }
     }
   }, {
     key: 'bindEvent',
     value: function bindEvent() {
       var _this = this;
 
-      var containerDragAndDrop = this.containerDragAndDrop,
-          el_BtnDelete = containerDragAndDrop.querySelector('.uploads-item__actions'),
-          el_InputFile = this.inputFile;
+      var dragDrop = this.element;
+      //actions = this.element.querySelector('.uploads-item__actions'),
+      //btnDelete = actions.querySelector('.delete');
 
-      el_InputFile.addEventListener('change', function (event) {
+      this.trigger.addEventListener('change', function (event) {
         _this.workPhoto(event.target.files);
+        _this.actionsMovement(event.target.files[0].name, 'show');
       });
 
-      el_BtnDelete.addEventListener('click', function (event) {
-        event.preventDefault();
-        var el = event.target;
-        el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
-        el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
-        el.parentNode.parentNode.querySelector('.uploads-item__actions').innerHTML = '';
-        containerDragAndDrop.querySelector(_this.classImageContainer).querySelector('img').remove();
-      });
-    }
-  }, {
-    key: 'dragAndDropEvent',
-    value: function dragAndDropEvent() {
-      var _this2 = this;
+      // btnDelete.addEventListener('click',(event) => {
+      //   event.preventDefault();
+      //   let el = event.target,
+      //       url = this.options.deleteOptions.url.replace(':filename', el.getAttribute('id'));
+      //
+      //   el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
+      //   el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
+      //   dragDrop.querySelector(this.classImageContainer).querySelector('img').remove();
+      //
+      //   console.log(el.parentNode.parentNode);
+      //
+      //
+      //   // Send to file deletion
+      //   this.ajax.get(url,(res) => {
+      //     console.log('res ', res);
+      //   });
+      //
+      // });
 
-      var dragDrop = this.containerDragAndDrop;
+      // Events
+      // Drag and Drop
 
-      dragDrop.addEventListener('dragover', function (event) {
+      this.element.addEventListener('dragover', function (event) {
         event.stopPropagation();
         event.preventDefault();
         dragDrop.classList.add('selected-area');
       }, false);
 
-      dragDrop.addEventListener('dragleave', function (event) {
+      this.element.addEventListener('dragenter', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        dragDrop.classList.add('selected-area');
+      }, false);
+
+      this.element.addEventListener('dragend', function (event) {
         dragDrop.classList.remove('selected-area');
       }, false);
 
-      dragDrop.addEventListener('drop', function (event) {
+      this.element.addEventListener('dragleave', function (event) {
+        dragDrop.classList.remove('selected-area');
+      }, false);
+
+      this.element.addEventListener('drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
-        _this2.workPhoto(event.dataTransfer.files);
+        _this.workPhoto(event.dataTransfer.files);
       }, false);
     }
   }, {
@@ -179,20 +246,28 @@ var FieldDrop = function () {
       var imageType = /image.*/,
           reader = new FileReader(),
           img = new Image(),
-          imageContainer = this.containerDragAndDrop.querySelector(this.classImageContainer),
-          imageBody = this.containerDragAndDrop.querySelector(this.classImageBody),
-          containerUploads = this.containerDragAndDrop.querySelector(this.classContainerUploads),
-          fileSize = this.humanFileSize(file.size);
+          uploads = this.element.querySelector(this.fieldDrop_uploads),
+          fileSize = this.humanFileSize(file.size),
+          self = this;
+
+      var divItem = document.createElement('div');
+      divItem.setAttribute('class', 'uploads__item');
+      divItem.setAttribute('id', file.name);
+
+      var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<span class="info--name">' + file.name + '</span>' + '<span class="info--size">' + fileSize + '</span>' + '<span class="info--actions"> ' + '<a href="#" class="delete" title="Delete">Excluir</a> ' + '</span>' + '</div>';
+
+      divItem.innerHTML = templateItem;
 
       if (file.type.match(imageType)) {
         reader.onload = function (e) {
           img.src = reader.result;
-          imageBody.innerHTML = "";
-          imageBody.appendChild(img);
+
+          divItem.querySelector('.item--image').innerHTML = "";
+          divItem.querySelector('.item--image').appendChild(img);
+
           // Uploads
-          containerUploads.querySelector('.uploads-item__file--name').innerHTML = file.name;
-          containerUploads.querySelector('.uploads-item__file--info').innerHTML = fileSize;
-          containerUploads.setAttribute('id', file.name);
+          uploads.appendChild(divItem);
+          self.actionsMovement(file.name, 'show');
         };
       }
       reader.readAsDataURL(file);
@@ -201,7 +276,7 @@ var FieldDrop = function () {
   }, {
     key: 'hideContenContainer',
     value: function hideContenContainer() {
-      this.containerDragAndDrop.querySelector(this.classContentContainer).classList.add('hide');
+      this.element.querySelector(this.fieldDrop_content).classList.add('hide');
     }
   }, {
     key: 'sendFile',
@@ -211,7 +286,9 @@ var FieldDrop = function () {
 
       formData.append("file", files[0]);
 
-      var xhr = this.ajax.postUpload('/upload', formData, function (res) {
+      var xhr = this.ajax.upload(this.options.url, formData, function (res) {
+        //let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
+        //btnDelete.setAttribute('id',res);
         return res;
       });
 
