@@ -15,6 +15,11 @@
       }
       .selected-area {
         border: 3px dashed #00BCD4;
+        z-index: 10;
+      }
+      .selected-area .drag-and-drop-info {
+        z-index: 1;
+        opacity: 0.5;
       }
       .drag-and-drop input[type='button']{
         display: inline-block;
@@ -44,12 +49,11 @@
       }
       .drag-and-drop .drag-and-drop-info .title{
         line-height: 40px;
-        display: block;
-        width: 100%;
         margin: 0;
         padding: 0;
         font-weight: normal;
         font-size: 1.4em;
+        z-index: 0;
       }
       .drag-and-drop .drag-and-drop-info .icon{
         font-size: 42px;
@@ -62,75 +66,45 @@
       .drag-and-drop .hide{
         display: none;
       }
-      .drag-and-drop__uploads .uploads-item {
+      .uploads-info .uploads-item {
         margin: 15px 0 0px 0;
         cursor: default;
         clear: both;
       }
-      .drag-and-drop__uploads .uploads-item .uploads-item__file--name {
+      .uploads-info .uploads-item .uploads__item--name {
         font-weight: bold;
         padding: 1px 10px 1px 5px;
         line-height: 32px;
       }
-      .drag-and-drop__uploads .uploads-item .uploads-item__file--info {
+      .uploads-info .uploads-item .uploads__item--info {
         color: #666;
         font-size: 14px;
       }
-      .drag-and-drop__uploads .uploads-item .uploads-item__actions > a {
+      /*.uploads-info .uploads-item .uploads-item__actions > a {
         visibility: hidden;
         height: 32px;
         width: 22px;
         padding: 0 10px;
       }
-      .drag-and-drop__uploads .uploads-item:hover .uploads-item__actions > a {
+      .uploads-info .uploads-item:hover .uploads-item__actions > a {
         visibility: visible;
-      }
+      }*/
     </style>
   </head>
   <body>
     <h1>Example FieldDrop.js</h1>
     <script type="text/javascript" src="../dist/field-drop.js"></script>
 
-    <div class="drag-and-drop" id="image-drag-drop">
-      <div class="drag-and-drop__content">
-        <div class="drag-and-drop-info">
-          <span class="title">Drop files here</span>
-          <span class="icon"></span>
-        </div>
-        <input type="button" id="fake-button" onclick="document.getElementById('file-input').click();" value="Select File ...">
-        <input type="file" name="file" id="file-input" style="display:none">
-      </div>
-      <div class="drag-and-drop__image">
-        <div class="drag-and-drop__image__body"></div>
-      </div>
-      <div class="drag-and-drop__uploads">
-        <div class="uploads-item">
-          <span class="uploads-item__file--name"></span>
-          <span class="uploads-item__file--info"></span>
-          <span class="uploads-item__actions">
-            <a href="#" class="delete" title="Delete">Excluir</a>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <progress id="upload-progress" min="0" max="100" value="0">0</progress>
+    <div class="drag-and-drop" id="image-drag-drop"></div>
+    
 
     <script>
       var fieldDrop = new FieldDrop('#image-drag-drop',{
           url:'/upload',
           deleteOptions:{
-            url:'/deleteFile',
-            method:'get'
+            url:'/deleteFile/:filename'
           }
       });
-
-      // fieldDrop.options = {
-      //  delete : {
-      //     url:''
-      //     method:''
-      //   }
-      // };
 
     </script>
   </body>
