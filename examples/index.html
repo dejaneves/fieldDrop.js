@@ -13,13 +13,11 @@
         padding: 15px;
         text-align: center;
       }
-      .selected-area {
-        border: 3px dashed #00BCD4;
-        z-index: 10;
+      .drag-and-drop progress {
+        padding: 5px;
       }
-      .selected-area .drag-and-drop-info {
-        z-index: 1;
-        opacity: 0.5;
+      .drag-and-drop .hide{
+        display: none;
       }
       .drag-and-drop input[type='button']{
         display: inline-block;
@@ -63,49 +61,70 @@
         margin: 0;
         padding: 0;
       }
-      .drag-and-drop .hide{
-        display: none;
+
+      .selected-area {
+        border: 3px solid #00BCD4;
+        z-index: 10;
       }
-      .uploads-info .uploads-item {
-        margin: 15px 0 0px 0;
-        cursor: default;
-        clear: both;
+      .selected-area .drag-and-drop-info {
+        z-index: 1;
+        opacity: 0.5;
       }
-      .uploads-info .uploads-item .uploads__item--name {
-        font-weight: bold;
-        padding: 1px 10px 1px 5px;
-        line-height: 32px;
+
+
+      .field-drop--uploads {
+        margin-bottom: 15px;
       }
-      .uploads-info .uploads-item .uploads__item--info {
-        color: #666;
-        font-size: 14px;
+
+      .field-drop--uploads .uploads__item {
+        background: #fff;
+        padding: 5px;
+        border: 1px solid #ddd;
       }
-      /*.uploads-info .uploads-item .uploads-item__actions > a {
-        visibility: hidden;
-        height: 32px;
-        width: 22px;
+
+      .field-drop--uploads .uploads__item .item--info {
+        padding: 15px 0px;
+        margin-bottom: 10px;
+      }
+
+      .field-drop--uploads .uploads__item .item--info div {
+        float: left;
         padding: 0 10px;
       }
-      .uploads-info .uploads-item:hover .uploads-item__actions > a {
-        visibility: visible;
-      }*/
+
+      .field-drop--uploads .uploads__item .item--info .info--name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 250px;
+        text-align: left;
+      }
+
+      .field-drop--uploads .uploads__item .item--info .info--size {
+        opacity: 0.5;
+        filter: alpha(opacity=50);
+        zoom: 1;
+      }
+
+      .field-drop--uploads .uploads__item .item--info .info--actions {}
+      .field-drop--uploads .uploads__item .item--info .info--actions a {
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
     <h1>Example FieldDrop.js</h1>
     <script type="text/javascript" src="../dist/field-drop.js"></script>
-
     <div class="drag-and-drop" id="image-drag-drop"></div>
-    
 
     <script>
       var fieldDrop = new FieldDrop('#image-drag-drop',{
           url:'/upload',
           deleteOptions:{
-            url:'/deleteFile/:filename'
+            url:'/deleteFile/:filename',
+            htmlText : 'Deletar'
           }
       });
-
     </script>
   </body>
 </html>

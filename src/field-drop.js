@@ -10,12 +10,17 @@ class FieldDrop {
     this.defaults = {
       url : '',
       selector: 'input[type="file"]',
-      eventListener: 'change'
+      eventListener : 'change',
+      deleteOptions : {
+        htmlText:'Delete'
+      }
     };
 
-    // Element Class
-    this.fieldDrop_content    = '.field-drop--content';
-    this.fieldDrop_uploads    = '.field-drop--uploads';
+    // Element
+    this.divItems = document.createElement('div');
+    this.divProgress = document.createElement('progress');
+    this.fieldDrop_content = '.field-drop--content';
+    this.fieldDrop_uploads = '.field-drop--uploads';
 
     if(!this.element) {
       throw new Error('error');
@@ -31,46 +36,48 @@ class FieldDrop {
       this.options = this.defaults;
     }
 
-    console.log(this.options);
-
     this.init();
   }
 
   init() {
-    this.mountTemplate();
+    this.mountTemplate(this.element);
     this.bindEvent();
   }
 
-  mountTemplate() {
+  /**
+   * Mounts all HTML inside the element
+   * @param  {Element} element
+   */
+  mountTemplate(element) {
+
+    let divContent  = document.createElement('div'),
+        divUpload   = document.createElement('div');
 
     // Div Contents
-    let divContent = document.createElement('div');
-        divContent.setAttribute('class',this.fieldDrop_content.replace('.',''));
-
+    divContent.setAttribute('class',this.fieldDrop_content.replace('.',''));
     divContent.innerHTML = '' +
     '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>'+
     '<input type="button" id="fake-button" onclick="document.getElementById("file-input").click();" value="Select File ..."> ' +
     '<input type="file" name="file" id="file-input" style="display:none">';
 
     // Div Uploads
-    let divUpload = document.createElement('div');
-        divUpload.setAttribute('class',this.fieldDrop_uploads.replace('.',''));
+    divUpload.setAttribute('class',this.fieldDrop_uploads.replace('.',''));
 
     // Div Progress
-    let divProgress = document.createElement('progress');
-        divProgress.setAttribute('id','upload-progress');
-        divProgress.setAttribute('min',0);
-        divProgress.setAttribute('max',100);
-        divProgress.setAttribute('value',0);
-        divProgress.innerHTML = '0';
+    this.divProgress.setAttribute('id','upload-progress');
+    this.divProgress.setAttribute('min',0);
+    this.divProgress.setAttribute('max',100);
+    this.divProgress.setAttribute('value',0);
+    this.divProgress.setAttribute('class','hide');
+    this.divProgress.innerHTML = '0';
 
     // render
-    this.element.appendChild(divContent);
-    this.element.appendChild(divUpload);
-    this.element.appendChild(divProgress);
+    element.appendChild(divContent);
+    element.appendChild(divUpload);
+    element.appendChild(this.divProgress);
 
     // Get Element
-    this.trigger = this.element.querySelector(this.options.selector);
+    this.trigger = element.querySelector(this.options.selector);
   }
 
   actionsMovement(filename,type) {
@@ -157,31 +164,30 @@ class FieldDrop {
         fileSize = this.humanFileSize(file.size),
         self = this;
 
-    let divItem = document.createElement('div');
-        divItem.setAttribute('class','uploads__item');
-        divItem.setAttribute('id',file.name);
+    this.divItems.setAttribute('class','uploads__item');
+    this.divItems.setAttribute('id',file.name);
 
     let templateItem = ('' +
         '<div class="item--image"></div>' +
         '<div class="item--info">' +
-          '<span class="info--name">' + file.name + '</span>' +
-          '<span class="info--size">' + fileSize + '</span>' +
-          '<span class="info--actions"> ' +
-            '<a href="#" class="delete" title="Delete">Excluir</a> ' +
-          '</span>' +
+          '<div class="info--name">' + file.name + '</div>' +
+          '<div class="info--size">' + fileSize + '</div>' +
+          '<div class="info--actions"> ' +
+            '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' +
+          '</div>' +
         '</div>');
-
-    divItem.innerHTML = templateItem;
+    this.divItems.innerHTML = "";
+    this.divItems.innerHTML = templateItem;
 
     if (file.type.match(imageType)) {
       reader.onload = function(e) {
         img.src = reader.result;
 
-        divItem.querySelector('.item--image').innerHTML = "";
-        divItem.querySelector('.item--image').appendChild(img);
+        self.divItems.querySelector('.item--image').innerHTML = "";
+        self.divItems.querySelector('.item--image').appendChild(img);
 
         // Uploads
-        uploads.appendChild(divItem);
+        uploads.appendChild(self.divItems);
         self.actionsMovement(file.name,'show');
       }
     }
@@ -194,29 +200,20 @@ class FieldDrop {
   }
 
   sendFile(files) {
+
     let formData = new FormData(),
-        progress = document.querySelector('progress');
+        self = this;
 
     formData.append("file", files[0]);
+    self.divProgress.classList.remove('hide');
 
-    var xhr = this.ajax.upload(this.options.url,formData,(res) => {
-      //let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
-      //btnDelete.setAttribute('id',res);
+    let xhr = this.ajax.upload(this.options.url,formData,(res) => {
+      // let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
+      // btnDelete.setAttribute('id',res);
+      console.log(res);
       return res;
     });
 
-    // readyState will be 3
-    xhr.upload.onprogress = function (event) {
-      if (event.lengthComputable) {
-        var complete = (event.loaded / event.total * 100 | 0);
-        progress.value = progress.innerHTML = complete;
-      }
-    };
-
-    // readyState will be 4
-    xhr.onload = function() {
-      progress.value = progress.innerHTML = 100;
-    };
 
   }
 
