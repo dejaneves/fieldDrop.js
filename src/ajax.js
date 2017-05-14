@@ -33,8 +33,11 @@ export default class Ajax {
   }
 
   upload(url, data, callback) {
-    let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+    let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
+        progress = document.querySelector('progress');
+
     xhr.open('POST', url);
+
     xhr.onreadystatechange = function() {
       if (xhr.readyState > 3 && xhr.status === 200) {
         callback(xhr.responseText);
@@ -42,6 +45,18 @@ export default class Ajax {
         callback(xhr);
       }
     };
+
+    xhr.onprogress = function (event) {
+      if (event.lengthComputable) {
+        var complete = (event.loaded / event.total * 100 | 0);
+        progress.value = progress.innerHTML = complete;
+      }
+    };
+
+    xhr.onload = function() {
+      progress.value = progress.innerHTML = 100;
+    };
+
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send(data);
 

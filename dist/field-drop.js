@@ -1,4 +1,72 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.FieldDrop = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+function E () {
+  // Keep this empty so it's easier to inherit from
+  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
+}
+
+E.prototype = {
+  on: function (name, callback, ctx) {
+    var e = this.e || (this.e = {});
+
+    (e[name] || (e[name] = [])).push({
+      fn: callback,
+      ctx: ctx
+    });
+
+    return this;
+  },
+
+  once: function (name, callback, ctx) {
+    var self = this;
+    function listener () {
+      self.off(name, listener);
+      callback.apply(ctx, arguments);
+    };
+
+    listener._ = callback
+    return this.on(name, listener, ctx);
+  },
+
+  emit: function (name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i = 0;
+    var len = evtArr.length;
+
+    for (i; i < len; i++) {
+      evtArr[i].fn.apply(evtArr[i].ctx, data);
+    }
+
+    return this;
+  },
+
+  off: function (name, callback) {
+    var e = this.e || (this.e = {});
+    var evts = e[name];
+    var liveEvents = [];
+
+    if (evts && callback) {
+      for (var i = 0, len = evts.length; i < len; i++) {
+        if (evts[i].fn !== callback && evts[i].fn._ !== callback)
+          liveEvents.push(evts[i]);
+      }
+    }
+
+    // Remove event from queue to prevent memory leak
+    // Suggested by https://github.com/lazd
+    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
+
+    (liveEvents.length)
+      ? e[name] = liveEvents
+      : delete e[name];
+
+    return this;
+  }
+};
+
+module.exports = E;
+
+},{}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -52,8 +120,11 @@ var Ajax = function () {
   }, {
     key: 'upload',
     value: function upload(url, data, callback) {
-      var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+      var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
+          progress = document.querySelector('progress');
+
       xhr.open('POST', url);
+
       xhr.onreadystatechange = function () {
         if (xhr.readyState > 3 && xhr.status === 200) {
           callback(xhr.responseText);
@@ -61,6 +132,18 @@ var Ajax = function () {
           callback(xhr);
         }
       };
+
+      xhr.onprogress = function (event) {
+        if (event.lengthComputable) {
+          var complete = event.loaded / event.total * 100 | 0;
+          progress.value = progress.innerHTML = complete;
+        }
+      };
+
+      xhr.onload = function () {
+        progress.value = progress.innerHTML = 100;
+      };
+
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       xhr.send(data);
 
@@ -73,7 +156,7 @@ var Ajax = function () {
 
 exports.default = Ajax;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -84,81 +167,113 @@ var _ajax = require('./ajax');
 
 var _ajax2 = _interopRequireDefault(_ajax);
 
+var _tinyEmitter = require('tiny-emitter');
+
+var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FieldDrop = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FieldDrop = function (_Emitter) {
+  _inherits(FieldDrop, _Emitter);
+
   function FieldDrop(element, options) {
     _classCallCheck(this, FieldDrop);
 
-    this.element = element;
-    this.trigger = null;
-    this.ajax = new _ajax2.default();
-    this.defaults = {
+    var _this = _possibleConstructorReturn(this, (FieldDrop.__proto__ || Object.getPrototypeOf(FieldDrop)).call(this));
+
+    _this.element = element;
+    _this.trigger = null;
+    _this.ajax = new _ajax2.default();
+    _this.defaults = {
       url: '',
       selector: 'input[type="file"]',
-      eventListener: 'change'
+      eventListener: 'change',
+      deleteOptions: {
+        htmlText: 'Delete'
+      }
     };
 
-    // Element Class
-    this.fieldDrop_content = '.field-drop--content';
-    this.fieldDrop_uploads = '.field-drop--uploads';
+    // Element
+    _this.divItems = document.createElement('div');
+    _this.divProgress = document.createElement('progress');
+    _this.fieldDrop_content = '.field-drop--content';
+    _this.fieldDrop_uploads = '.field-drop--uploads';
 
-    if (!this.element) {
+    if (!_this.element) {
       throw new Error('error');
     }
 
-    if (typeof this.element === 'string') {
-      this.element = document.querySelector(this.element);
+    if (typeof _this.element === 'string') {
+      _this.element = document.querySelector(_this.element);
     }
 
     if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
-      this.options = Object.assign({}, this.defaults, options);
+      _this.options = Object.assign({}, _this.defaults, options);
     } else {
-      this.options = this.defaults;
+      _this.options = _this.defaults;
     }
 
-    console.log(this.options);
-
-    this.init();
+    _this.init();
+    return _this;
   }
 
   _createClass(FieldDrop, [{
     key: 'init',
     value: function init() {
-      this.mountTemplate();
+      this.mountTemplate(this.element);
       this.bindEvent();
     }
   }, {
+    key: 'createActionDelete',
+    value: function createActionDelete(filename) {
+      this.emit('delete', filename);
+    }
+  }, {
+    key: 'createActionSend',
+    value: function createActionSend(filename) {
+      this.emit('send', filename);
+    }
+
+    /**
+     * Mounts all HTML inside the element
+     * @param  {Element} element
+     */
+
+  }, {
     key: 'mountTemplate',
-    value: function mountTemplate() {
+    value: function mountTemplate(element) {
+
+      var divContent = document.createElement('div'),
+          divUpload = document.createElement('div');
 
       // Div Contents
-      var divContent = document.createElement('div');
       divContent.setAttribute('class', this.fieldDrop_content.replace('.', ''));
-
       divContent.innerHTML = '' + '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>' + '<input type="button" id="fake-button" onclick="document.getElementById("file-input").click();" value="Select File ..."> ' + '<input type="file" name="file" id="file-input" style="display:none">';
 
       // Div Uploads
-      var divUpload = document.createElement('div');
       divUpload.setAttribute('class', this.fieldDrop_uploads.replace('.', ''));
 
       // Div Progress
-      var divProgress = document.createElement('progress');
-      divProgress.setAttribute('id', 'upload-progress');
-      divProgress.setAttribute('min', 0);
-      divProgress.setAttribute('max', 100);
-      divProgress.setAttribute('value', 0);
-      divProgress.innerHTML = '0';
+      this.divProgress.setAttribute('id', 'upload-progress');
+      this.divProgress.setAttribute('min', 0);
+      this.divProgress.setAttribute('max', 100);
+      this.divProgress.setAttribute('value', 0);
+      this.divProgress.setAttribute('class', 'hide');
+      this.divProgress.innerHTML = '0';
 
       // render
-      this.element.appendChild(divContent);
-      this.element.appendChild(divUpload);
-      this.element.appendChild(divProgress);
+      element.appendChild(divContent);
+      element.appendChild(divUpload);
+      element.appendChild(this.divProgress);
 
       // Get Element
-      this.trigger = this.element.querySelector(this.options.selector);
+      this.trigger = element.querySelector(this.options.selector);
     }
   }, {
     key: 'actionsMovement',
@@ -173,37 +288,34 @@ var FieldDrop = function () {
       // }
     }
   }, {
+    key: 'EventDelete',
+    value: function EventDelete() {
+      var _this2 = this;
+
+      var btnDelete = this.element.querySelector('.field-drop--uploads .uploads__item .delete');
+
+      btnDelete.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        var item = event.target.parentNode.parentNode.parentNode;
+        item.remove();
+
+        console.log(item);
+        _this2.element.querySelector(_this2.fieldDrop_content).classList.remove('hide');
+        _this2.createActionsDelete('file.jpg');
+      });
+    }
+  }, {
     key: 'bindEvent',
     value: function bindEvent() {
-      var _this = this;
+      var _this3 = this;
 
       var dragDrop = this.element;
-      //actions = this.element.querySelector('.uploads-item__actions'),
-      //btnDelete = actions.querySelector('.delete');
 
       this.trigger.addEventListener('change', function (event) {
-        _this.workPhoto(event.target.files);
-        _this.actionsMovement(event.target.files[0].name, 'show');
+        _this3.workPhoto(event.target.files);
+        _this3.actionsMovement(event.target.files[0].name, 'show');
       });
-
-      // btnDelete.addEventListener('click',(event) => {
-      //   event.preventDefault();
-      //   let el = event.target,
-      //       url = this.options.deleteOptions.url.replace(':filename', el.getAttribute('id'));
-      //
-      //   el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
-      //   el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
-      //   dragDrop.querySelector(this.classImageContainer).querySelector('img').remove();
-      //
-      //   console.log(el.parentNode.parentNode);
-      //
-      //
-      //   // Send to file deletion
-      //   this.ajax.get(url,(res) => {
-      //     console.log('res ', res);
-      //   });
-      //
-      // });
 
       // Events
       // Drag and Drop
@@ -231,14 +343,13 @@ var FieldDrop = function () {
       this.element.addEventListener('drop', function (event) {
         event.stopPropagation();
         event.preventDefault();
-        _this.workPhoto(event.dataTransfer.files);
+        _this3.workPhoto(event.dataTransfer.files);
       }, false);
     }
   }, {
     key: 'workPhoto',
     value: function workPhoto(files) {
       this.renderPhoto(files[0]);
-      this.sendFile(files);
     }
   }, {
     key: 'renderPhoto',
@@ -250,24 +361,25 @@ var FieldDrop = function () {
           fileSize = this.humanFileSize(file.size),
           self = this;
 
-      var divItem = document.createElement('div');
-      divItem.setAttribute('class', 'uploads__item');
-      divItem.setAttribute('id', file.name);
+      this.divItems.setAttribute('class', 'uploads__item');
+      this.divItems.setAttribute('id', file.name);
 
-      var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<span class="info--name">' + file.name + '</span>' + '<span class="info--size">' + fileSize + '</span>' + '<span class="info--actions"> ' + '<a href="#" class="delete" title="Delete">Excluir</a> ' + '</span>' + '</div>';
+      var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<div class="info--name">' + file.name + '</div>' + '<div class="info--size">' + fileSize + '</div>' + '<div class="info--actions"> ' + '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' + '</div>' + '</div>';
 
-      divItem.innerHTML = templateItem;
+      this.divItems.innerHTML = "";
+      this.divItems.innerHTML = templateItem;
 
       if (file.type.match(imageType)) {
         reader.onload = function (e) {
           img.src = reader.result;
 
-          divItem.querySelector('.item--image').innerHTML = "";
-          divItem.querySelector('.item--image').appendChild(img);
+          self.divItems.querySelector('.item--image').innerHTML = "";
+          self.divItems.querySelector('.item--image').appendChild(img);
 
           // Uploads
-          uploads.appendChild(divItem);
-          self.actionsMovement(file.name, 'show');
+          uploads.appendChild(self.divItems);
+          self.EventDelete();
+          self.createActionSend(file.name);
         };
       }
       reader.readAsDataURL(file);
@@ -281,29 +393,19 @@ var FieldDrop = function () {
   }, {
     key: 'sendFile',
     value: function sendFile(files) {
+
       var formData = new FormData(),
-          progress = document.querySelector('progress');
+          self = this;
 
       formData.append("file", files[0]);
+      self.divProgress.classList.remove('hide');
 
       var xhr = this.ajax.upload(this.options.url, formData, function (res) {
-        //let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
-        //btnDelete.setAttribute('id',res);
+        // let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
+        // btnDelete.setAttribute('id',res);
+        console.log(res);
         return res;
       });
-
-      // readyState will be 3
-      xhr.upload.onprogress = function (event) {
-        if (event.lengthComputable) {
-          var complete = event.loaded / event.total * 100 | 0;
-          progress.value = progress.innerHTML = complete;
-        }
-      };
-
-      // readyState will be 4
-      xhr.onload = function () {
-        progress.value = progress.innerHTML = 100;
-      };
     }
   }, {
     key: 'humanFileSize',
@@ -314,9 +416,9 @@ var FieldDrop = function () {
   }]);
 
   return FieldDrop;
-}();
+}(_tinyEmitter2.default);
 
 module.exports = FieldDrop;
 
-},{"./ajax":1}]},{},[2])(2)
+},{"./ajax":2,"tiny-emitter":1}]},{},[3])(3)
 });
