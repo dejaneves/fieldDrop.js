@@ -108,6 +108,7 @@
 
       .field-drop--uploads .uploads__item .item--info .info--actions {}
       .field-drop--uploads .uploads__item .item--info .info--actions a {
+        padding: 5px;
         text-decoration: none;
       }
     </style>
@@ -125,6 +126,15 @@
             htmlText : 'Deletar'
           }
       });
+
+      fieldDrop.on('send', function (filename) {
+        console.log('File name to send ', filename);
+      });
+
+      fieldDrop.on('delete', function (filename) {
+        console.log('File name to exclusion ', filename);
+      });
+
     </script>
   </body>
 </html>

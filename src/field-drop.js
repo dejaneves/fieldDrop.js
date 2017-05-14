@@ -1,8 +1,10 @@
 import Ajax from './ajax';
+import Emitter from 'tiny-emitter';
 
-class FieldDrop {
+class FieldDrop extends Emitter {
 
   constructor(element,options) {
+    super();
 
     this.element = element;
     this.trigger = null;
@@ -42,6 +44,14 @@ class FieldDrop {
   init() {
     this.mountTemplate(this.element);
     this.bindEvent();
+  }
+
+  createActionDelete(filename) {
+    this.emit('delete',filename);
+  }
+
+  createActionSend(filename) {
+    this.emit('send',filename);
   }
 
   /**
@@ -91,34 +101,29 @@ class FieldDrop {
     // }
   }
 
+  EventDelete() {
+    let btnDelete = this.element.querySelector('.field-drop--uploads .uploads__item .delete');
+
+    btnDelete.addEventListener('click',(event) => {
+      event.preventDefault();
+
+      let item = event.target.parentNode.parentNode.parentNode;
+          item.remove();
+
+      console.log(item);
+      this.element.querySelector(this.fieldDrop_content).classList.remove('hide');
+      this.createActionsDelete('file.jpg');
+
+    });
+  }
+
   bindEvent() {
     let dragDrop = this.element;
-        //actions = this.element.querySelector('.uploads-item__actions'),
-        //btnDelete = actions.querySelector('.delete');
 
     this.trigger.addEventListener('change',(event) => {
       this.workPhoto(event.target.files);
       this.actionsMovement(event.target.files[0].name,'show');
     });
-
-    // btnDelete.addEventListener('click',(event) => {
-    //   event.preventDefault();
-    //   let el = event.target,
-    //       url = this.options.deleteOptions.url.replace(':filename', el.getAttribute('id'));
-    //
-    //   el.parentNode.parentNode.querySelector('.uploads-item__file--name').innerHTML = '';
-    //   el.parentNode.parentNode.querySelector('.uploads-item__file--info').innerHTML = '';
-    //   dragDrop.querySelector(this.classImageContainer).querySelector('img').remove();
-    //
-    //   console.log(el.parentNode.parentNode);
-    //
-    //
-    //   // Send to file deletion
-    //   this.ajax.get(url,(res) => {
-    //     console.log('res ', res);
-    //   });
-    //
-    // });
 
     // Events
     // Drag and Drop
@@ -153,7 +158,6 @@ class FieldDrop {
 
   workPhoto(files) {
     this.renderPhoto(files[0]);
-    this.sendFile(files);
   }
 
   renderPhoto(file) {
@@ -168,14 +172,15 @@ class FieldDrop {
     this.divItems.setAttribute('id',file.name);
 
     let templateItem = ('' +
-        '<div class="item--image"></div>' +
-        '<div class="item--info">' +
-          '<div class="info--name">' + file.name + '</div>' +
-          '<div class="info--size">' + fileSize + '</div>' +
-          '<div class="info--actions"> ' +
-            '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' +
-          '</div>' +
-        '</div>');
+    '<div class="item--image"></div>' +
+    '<div class="item--info">' +
+      '<div class="info--name">' + file.name + '</div>' +
+      '<div class="info--size">' + fileSize + '</div>' +
+      '<div class="info--actions"> ' +
+        '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' +
+      '</div>' +
+    '</div>');
+
     this.divItems.innerHTML = "";
     this.divItems.innerHTML = templateItem;
 
@@ -188,11 +193,13 @@ class FieldDrop {
 
         // Uploads
         uploads.appendChild(self.divItems);
-        self.actionsMovement(file.name,'show');
+        self.EventDelete();
+        self.createActionSend(file.name);
       }
     }
     reader.readAsDataURL(file);
     this.hideContenContainer();
+
   }
 
   hideContenContainer() {

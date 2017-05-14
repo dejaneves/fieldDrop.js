@@ -26,5 +26,8 @@
     "multer": "^1.2.1",
     "serve-static": "^1.11.1",
     "watchify": "^3.8.0"
+  },
+  "dependencies": {
+    "tiny-emitter": "^2.0.0"
   }
 }
