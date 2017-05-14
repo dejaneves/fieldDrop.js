@@ -67,7 +67,7 @@ class FieldDrop extends Emitter {
     divContent.setAttribute('class',this.fieldDrop_content.replace('.',''));
     divContent.innerHTML = '' +
     '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>'+
-    '<input type="button" id="fake-button" onclick="document.getElementById("file-input").click();" value="Select File ..."> ' +
+    '<input type="button" id="fake-button" onclick="document.getElementById(\'file-input\').click();" value="Select File ..."> ' +
     '<input type="file" name="file" id="file-input" style="display:none">';
 
     // Div Uploads
@@ -110,9 +110,10 @@ class FieldDrop extends Emitter {
       let item = event.target.parentNode.parentNode.parentNode;
           item.remove();
 
-      console.log(item);
+      let filename = item.getAttribute('id');
+
       this.element.querySelector(this.fieldDrop_content).classList.remove('hide');
-      this.createActionsDelete('file.jpg');
+      this.createActionDelete(filename);
 
     });
   }
@@ -122,7 +123,6 @@ class FieldDrop extends Emitter {
 
     this.trigger.addEventListener('change',(event) => {
       this.workPhoto(event.target.files);
-      this.actionsMovement(event.target.files[0].name,'show');
     });
 
     // Events

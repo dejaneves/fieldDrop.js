@@ -254,7 +254,7 @@ var FieldDrop = function (_Emitter) {
 
       // Div Contents
       divContent.setAttribute('class', this.fieldDrop_content.replace('.', ''));
-      divContent.innerHTML = '' + '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>' + '<input type="button" id="fake-button" onclick="document.getElementById("file-input").click();" value="Select File ..."> ' + '<input type="file" name="file" id="file-input" style="display:none">';
+      divContent.innerHTML = '' + '<div class="drag-and-drop-info"><span class="title">Drop files here</span><span class="icon"></span></div>' + '<input type="button" id="fake-button" onclick="document.getElementById(\'file-input\').click();" value="Select File ..."> ' + '<input type="file" name="file" id="file-input" style="display:none">';
 
       // Div Uploads
       divUpload.setAttribute('class', this.fieldDrop_uploads.replace('.', ''));
@@ -300,9 +300,10 @@ var FieldDrop = function (_Emitter) {
         var item = event.target.parentNode.parentNode.parentNode;
         item.remove();
 
-        console.log(item);
+        var filename = item.getAttribute('id');
+
         _this2.element.querySelector(_this2.fieldDrop_content).classList.remove('hide');
-        _this2.createActionsDelete('file.jpg');
+        _this2.createActionDelete(filename);
       });
     }
   }, {
@@ -314,7 +315,6 @@ var FieldDrop = function (_Emitter) {
 
       this.trigger.addEventListener('change', function (event) {
         _this3.workPhoto(event.target.files);
-        _this3.actionsMovement(event.target.files[0].name, 'show');
       });
 
       // Events
