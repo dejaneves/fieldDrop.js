@@ -130,6 +130,7 @@
       fieldDrop.on('send', function (files) {
         var formData = new FormData();
 
+        // server send
         formData.append("file", files[0]);
         fieldDrop.sendFile(formData,function(res){
           console.log(res);
