@@ -127,8 +127,13 @@
           }
       });
 
-      fieldDrop.on('send', function (filename) {
-        console.log('File name to send: ', filename);
+      fieldDrop.on('send', function (files) {
+        var formData = new FormData();
+
+        formData.append("file", files[0]);
+        fieldDrop.sendFile(formData,function(res){
+          console.log(res);
+        });
       });
 
       fieldDrop.on('delete', function (filename) {

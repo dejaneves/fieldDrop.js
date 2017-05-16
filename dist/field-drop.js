@@ -236,8 +236,8 @@ var FieldDrop = function (_Emitter) {
     }
   }, {
     key: 'createActionSend',
-    value: function createActionSend(filename) {
-      this.emit('send', filename);
+    value: function createActionSend(files) {
+      this.emit('send', files);
     }
 
     /**
@@ -349,27 +349,27 @@ var FieldDrop = function (_Emitter) {
   }, {
     key: 'workPhoto',
     value: function workPhoto(files) {
-      this.renderPhoto(files[0]);
+      this.renderPhoto(files);
     }
   }, {
     key: 'renderPhoto',
-    value: function renderPhoto(file) {
+    value: function renderPhoto(files) {
       var imageType = /image.*/,
           reader = new FileReader(),
           img = new Image(),
           uploads = this.element.querySelector(this.fieldDrop_uploads),
-          fileSize = this.humanFileSize(file.size),
+          fileSize = this.humanFileSize(files[0].size),
           self = this;
 
       this.divItems.setAttribute('class', 'uploads__item');
-      this.divItems.setAttribute('id', file.name);
+      this.divItems.setAttribute('id', files[0].name);
 
-      var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<div class="info--name">' + file.name + '</div>' + '<div class="info--size">' + fileSize + '</div>' + '<div class="info--actions"> ' + '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' + '</div>' + '</div>';
+      var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<div class="info--name">' + files[0].name + '</div>' + '<div class="info--size">' + fileSize + '</div>' + '<div class="info--actions"> ' + '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' + '</div>' + '</div>';
 
       this.divItems.innerHTML = "";
       this.divItems.innerHTML = templateItem;
 
-      if (file.type.match(imageType)) {
+      if (files[0].type.match(imageType)) {
         reader.onload = function (e) {
           img.src = reader.result;
 
@@ -379,10 +379,10 @@ var FieldDrop = function (_Emitter) {
           // Uploads
           uploads.appendChild(self.divItems);
           self.EventDelete();
-          self.createActionSend(file.name);
+          self.createActionSend(files);
         };
       }
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(files[0]);
       this.hideContenContainer();
     }
   }, {
@@ -392,19 +392,9 @@ var FieldDrop = function (_Emitter) {
     }
   }, {
     key: 'sendFile',
-    value: function sendFile(files) {
-
-      var formData = new FormData(),
-          self = this;
-
-      formData.append("file", files[0]);
-      self.divProgress.classList.remove('hide');
-
+    value: function sendFile(formData, cb) {
       var xhr = this.ajax.upload(this.options.url, formData, function (res) {
-        // let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
-        // btnDelete.setAttribute('id',res);
-        console.log(res);
-        return res;
+        cb(res);
       });
     }
   }, {
