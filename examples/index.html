@@ -119,10 +119,10 @@
     <div class="drag-and-drop" id="image-drag-drop"></div>
 
     <script>
+
       var fieldDrop = new FieldDrop('#image-drag-drop',{
           url:'/upload',
-          deleteOptions:{
-            url:'/deleteFile/:filename',
+          deleteOptions: {
             htmlText : 'Deletar'
           }
       });
@@ -134,11 +134,13 @@
         formData.append("file", files[0]);
         fieldDrop.sendFile(formData,function(res){
           console.log(res);
+          fieldDrop.setAttrItem(files[0].name,{});
         });
       });
 
-      fieldDrop.on('delete', function (filename) {
-        console.log('File name to exclusion: ', filename);
+      fieldDrop.on('delete', function (localfilename) {
+        console.log('response text', fieldDrop.responseText);
+        console.log('File name to exclusion: ', localfilename);
       });
 
     </script>

@@ -239,6 +239,13 @@ var FieldDrop = function (_Emitter) {
     value: function createActionSend(files) {
       this.emit('send', files);
     }
+  }, {
+    key: 'setAttrItem',
+    value: function setAttrItem(filename, options) {
+      var query = "div[data-name='" + filename + "']";
+      var item = document.querySelector(query);
+      console.log(item);
+    }
 
     /**
      * Mounts all HTML inside the element
@@ -300,7 +307,7 @@ var FieldDrop = function (_Emitter) {
         var item = event.target.parentNode.parentNode.parentNode;
         item.remove();
 
-        var filename = item.getAttribute('id');
+        var filename = item.getAttribute('data-name');
 
         _this2.element.querySelector(_this2.fieldDrop_content).classList.remove('hide');
         _this2.createActionDelete(filename);
@@ -362,7 +369,7 @@ var FieldDrop = function (_Emitter) {
           self = this;
 
       this.divItems.setAttribute('class', 'uploads__item');
-      this.divItems.setAttribute('id', files[0].name);
+      this.divItems.setAttribute('data-name', files[0].name);
 
       var templateItem = '' + '<div class="item--image"></div>' + '<div class="item--info">' + '<div class="info--name">' + files[0].name + '</div>' + '<div class="info--size">' + fileSize + '</div>' + '<div class="info--actions"> ' + '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' + '</div>' + '</div>';
 
