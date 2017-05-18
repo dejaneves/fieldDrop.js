@@ -25,13 +25,13 @@ var storage = multer.diskStorage({
   }
 }); const upload = multer({ storage: storage });
 
-// Route upload file
+// Route file upload
 app.post('/upload', upload.single('file'), function (req, res, next) {
   console.log(req.file);
   res.send(req.file.filename);
 });
 
-// Route delete file
+// Route file delete
 app.get('/deleteFile/:filename',function(req, res) {
   var filename = req.params.filename;
 
