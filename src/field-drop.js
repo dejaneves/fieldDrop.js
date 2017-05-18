@@ -54,6 +54,12 @@ class FieldDrop extends Emitter {
     this.emit('send',files);
   }
 
+  setAttrItem(filename,options) {
+    let query = "div[data-name='"+filename+"']";
+    let item = document.querySelector(query);
+    console.log(item);
+  }
+
   /**
    * Mounts all HTML inside the element
    * @param  {Element} element
@@ -110,7 +116,7 @@ class FieldDrop extends Emitter {
       let item = event.target.parentNode.parentNode.parentNode;
           item.remove();
 
-      let filename = item.getAttribute('id');
+      let filename = item.getAttribute('data-name');
 
       this.element.querySelector(this.fieldDrop_content).classList.remove('hide');
       this.createActionDelete(filename);
@@ -169,7 +175,7 @@ class FieldDrop extends Emitter {
         self = this;
 
     this.divItems.setAttribute('class','uploads__item');
-    this.divItems.setAttribute('id',files[0].name);
+    this.divItems.setAttribute('data-name',files[0].name);
 
     let templateItem = ('' +
     '<div class="item--image"></div>' +
