@@ -15,4 +15,4 @@ First, include the script located on the `dist` folder.
 
 ## License
 
-[MIT License](http://jaime.mit-license.org/) © Jaime Neves
+[MIT License](http://jaimeneves.mit-license.org/) © Jaime Neves
