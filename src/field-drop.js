@@ -46,12 +46,19 @@ class FieldDrop extends Emitter {
     this.bindEvent();
   }
 
-  createActionDelete(filename) {
-    this.emit('delete',filename);
+  createActionDelete(filename,responseServer) {
+    this.emit('delete',filename,responseServer);
   }
 
-  createActionSend(filename) {
-    this.emit('send',filename);
+  createActionSend(files) {
+    this.emit('send',files);
+  }
+
+  setAttrItem(filename,value) {
+    let query = "div[data-name='"+filename+"']",
+        item = document.querySelector(query);
+
+    item.setAttribute('data-response',value);
   }
 
   /**
@@ -90,17 +97,6 @@ class FieldDrop extends Emitter {
     this.trigger = element.querySelector(this.options.selector);
   }
 
-  actionsMovement(filename,type) {
-    //let items = this.element.querySelector(this.fieldDrop_uploads).querySelectorAll('.uploads-item');
-
-    // if(filename === items[0].getAttribute('id')) {
-    //   if(type === 'show')
-    //     items[0].querySelector('.uploads-item__actions .delete').classList.remove('hide')
-    //   else if(type === 'hide')
-    //     items[0].querySelector('.uploads-item__actions .delete').classList.add('hide')
-    // }
-  }
-
   EventDelete() {
     let btnDelete = this.element.querySelector('.field-drop--uploads .uploads__item .delete');
 
@@ -110,10 +106,11 @@ class FieldDrop extends Emitter {
       let item = event.target.parentNode.parentNode.parentNode;
           item.remove();
 
-      let filename = item.getAttribute('id');
+      let filename = item.getAttribute('data-name'),
+          responseServer = item.getAttribute('data-response');
 
       this.element.querySelector(this.fieldDrop_content).classList.remove('hide');
-      this.createActionDelete(filename);
+      this.createActionDelete(filename,responseServer);
 
     });
   }
@@ -157,24 +154,24 @@ class FieldDrop extends Emitter {
   }
 
   workPhoto(files) {
-    this.renderPhoto(files[0]);
+    this.renderPhoto(files);
   }
 
-  renderPhoto(file) {
+  renderPhoto(files) {
     let imageType = /image.*/,
         reader = new FileReader(),
         img = new Image(),
         uploads = this.element.querySelector(this.fieldDrop_uploads),
-        fileSize = this.humanFileSize(file.size),
+        fileSize = this.humanFileSize(files[0].size),
         self = this;
 
     this.divItems.setAttribute('class','uploads__item');
-    this.divItems.setAttribute('id',file.name);
+    this.divItems.setAttribute('data-name',files[0].name);
 
     let templateItem = ('' +
     '<div class="item--image"></div>' +
     '<div class="item--info">' +
-      '<div class="info--name">' + file.name + '</div>' +
+      '<div class="info--name">' + files[0].name + '</div>' +
       '<div class="info--size">' + fileSize + '</div>' +
       '<div class="info--actions"> ' +
         '<a href="#" class="delete" title="Delete"> ' + this.options.deleteOptions.htmlText + ' </a> ' +
@@ -184,7 +181,7 @@ class FieldDrop extends Emitter {
     this.divItems.innerHTML = "";
     this.divItems.innerHTML = templateItem;
 
-    if (file.type.match(imageType)) {
+    if (files[0].type.match(imageType)) {
       reader.onload = function(e) {
         img.src = reader.result;
 
@@ -194,10 +191,10 @@ class FieldDrop extends Emitter {
         // Uploads
         uploads.appendChild(self.divItems);
         self.EventDelete();
-        self.createActionSend(file.name);
+        self.createActionSend(files);
       }
     }
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(files[0]);
     this.hideContenContainer();
 
   }
@@ -206,22 +203,10 @@ class FieldDrop extends Emitter {
     this.element.querySelector(this.fieldDrop_content).classList.add('hide');
   }
 
-  sendFile(files) {
-
-    let formData = new FormData(),
-        self = this;
-
-    formData.append("file", files[0]);
-    self.divProgress.classList.remove('hide');
-
+  sendFile(formData,cb) {
     let xhr = this.ajax.upload(this.options.url,formData,(res) => {
-      // let btnDelete = this.element.querySelector('.uploads-item__actions > .delete');
-      // btnDelete.setAttribute('id',res);
-      console.log(res);
-      return res;
+      cb(res);
     });
-
-
   }
 
   humanFileSize(size) {
