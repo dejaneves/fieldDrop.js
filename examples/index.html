@@ -127,6 +127,7 @@
           }
       });
 
+
       fieldDrop.on('send', function (files) {
         var formData = new FormData();
 
@@ -134,13 +135,14 @@
         formData.append("file", files[0]);
         fieldDrop.sendFile(formData,function(res){
           console.log(res);
-          fieldDrop.setAttrItem(files[0].name,{});
+          var referenceName = files[0].name;
+          fieldDrop.setAttrItem(referenceName,res);
         });
       });
 
-      fieldDrop.on('delete', function (localfilename) {
-        console.log('response text', fieldDrop.responseText);
-        console.log('File name to exclusion: ', localfilename);
+      fieldDrop.on('delete', function (localFileName,responseServer) {
+        console.log('response server: ', responseServer);
+        console.log('Local file name: ', localFileName);
       });
 
     </script>

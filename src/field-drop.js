@@ -46,18 +46,19 @@ class FieldDrop extends Emitter {
     this.bindEvent();
   }
 
-  createActionDelete(filename) {
-    this.emit('delete',filename);
+  createActionDelete(filename,responseServer) {
+    this.emit('delete',filename,responseServer);
   }
 
   createActionSend(files) {
     this.emit('send',files);
   }
 
-  setAttrItem(filename,options) {
-    let query = "div[data-name='"+filename+"']";
-    let item = document.querySelector(query);
-    console.log(item);
+  setAttrItem(filename,value) {
+    let query = "div[data-name='"+filename+"']",
+        item = document.querySelector(query);
+
+    item.setAttribute('data-response',value);
   }
 
   /**
@@ -96,17 +97,6 @@ class FieldDrop extends Emitter {
     this.trigger = element.querySelector(this.options.selector);
   }
 
-  actionsMovement(filename,type) {
-    //let items = this.element.querySelector(this.fieldDrop_uploads).querySelectorAll('.uploads-item');
-
-    // if(filename === items[0].getAttribute('id')) {
-    //   if(type === 'show')
-    //     items[0].querySelector('.uploads-item__actions .delete').classList.remove('hide')
-    //   else if(type === 'hide')
-    //     items[0].querySelector('.uploads-item__actions .delete').classList.add('hide')
-    // }
-  }
-
   EventDelete() {
     let btnDelete = this.element.querySelector('.field-drop--uploads .uploads__item .delete');
 
@@ -116,10 +106,11 @@ class FieldDrop extends Emitter {
       let item = event.target.parentNode.parentNode.parentNode;
           item.remove();
 
-      let filename = item.getAttribute('data-name');
+      let filename = item.getAttribute('data-name'),
+          responseServer = item.getAttribute('data-response');
 
       this.element.querySelector(this.fieldDrop_content).classList.remove('hide');
-      this.createActionDelete(filename);
+      this.createActionDelete(filename,responseServer);
 
     });
   }
