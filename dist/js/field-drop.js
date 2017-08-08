@@ -1,11 +1,3 @@
-/*!
- * Field Drop Js v1.0.0 (May 20th 2017)
- * FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews
- * 
- * https://github.com/dejaneves/fieldDrop.js#readme
- * 
- * Licensed MIT © Jaime Neves
- */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.FieldDrop = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 function E () {
   // Keep this empty so it's easier to inherit from
@@ -195,7 +187,7 @@ var FieldDrop = function (_Emitter) {
 
     var _this = _possibleConstructorReturn(this, (FieldDrop.__proto__ || Object.getPrototypeOf(FieldDrop)).call(this));
 
-    _this.element = element;
+    _this.element = !element ? null : element;
     _this.trigger = null;
     _this.ajax = new _ajax2.default();
     _this.defaults = {
@@ -213,10 +205,6 @@ var FieldDrop = function (_Emitter) {
     _this.fieldDrop_content = '.field-drop--content';
     _this.fieldDrop_uploads = '.field-drop--uploads';
 
-    if (!_this.element) {
-      throw new Error('error');
-    }
-
     if (typeof _this.element === 'string') {
       _this.element = document.querySelector(_this.element);
     }
@@ -227,17 +215,14 @@ var FieldDrop = function (_Emitter) {
       _this.options = _this.defaults;
     }
 
-    _this.init();
+    if (_this.element) {
+      _this.mountTemplate(_this.element);
+      _this.bindEvent();
+    }
     return _this;
   }
 
   _createClass(FieldDrop, [{
-    key: 'init',
-    value: function init() {
-      this.mountTemplate(this.element);
-      this.bindEvent();
-    }
-  }, {
     key: 'createActionDelete',
     value: function createActionDelete(filename, responseServer) {
       this.emit('delete', filename, responseServer);

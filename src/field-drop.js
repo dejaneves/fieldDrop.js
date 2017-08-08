@@ -6,7 +6,7 @@ class FieldDrop extends Emitter {
   constructor(element,options) {
     super();
 
-    this.element = element;
+    this.element = !element ? null : element;
     this.trigger = null;
     this.ajax = new Ajax;
     this.defaults = {
@@ -24,10 +24,6 @@ class FieldDrop extends Emitter {
     this.fieldDrop_content = '.field-drop--content';
     this.fieldDrop_uploads = '.field-drop--uploads';
 
-    if(!this.element) {
-      throw new Error('error');
-    }
-
     if(typeof this.element === 'string') {
       this.element = document.querySelector(this.element);
     }
@@ -38,12 +34,10 @@ class FieldDrop extends Emitter {
       this.options = this.defaults;
     }
 
-    this.init();
-  }
-
-  init() {
-    this.mountTemplate(this.element);
-    this.bindEvent();
+    if (this.element) {
+      this.mountTemplate(this.element);
+      this.bindEvent();
+    }
   }
 
   createActionDelete(filename,responseServer) {
