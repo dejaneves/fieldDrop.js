@@ -1,12 +1,13 @@
 {
   "name": "field-drop.js",
-  "version": "0.0.1",
-  "description": "",
-  "main": "dist/field-drop.js",
+  "version": "1.0.0",
+  "description": "FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews",
+  "main": "dist/js/field-drop.js",
   "scripts": {
-    "build-debug": "browserify src/field-drop.js -s FieldDrop -t [babelify] -o dist/field-drop.js",
-    "build-watch": "watchify src/field-drop.js -s FieldDrop -t [babelify] -o dist/field-drop.js -v",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-debug": "browserify src/field-drop.js -s FieldDrop -t [babelify] -p [browserify-banner --file .banner ] -o dist/js/field-drop.js",
+    "build-min": "uglifyjs dist/js/field-drop.js --comments '/!/' --compress --mangle -o dist/js/field-drop.min.js",
+    "build-watch": "watchify src/field-drop.js -s FieldDrop -t [babelify] -o dist/js/field-drop.js -v",
+    "test": ""
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,11 @@
     "babel-preset-es2015": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
+    "browserify-banner": "^1.0.4",
     "express": "^4.15.2",
     "multer": "^1.2.1",
     "serve-static": "^1.11.1",
+    "uglify-js": "^3.0.9",
     "watchify": "^3.8.0"
   },
   "dependencies": {

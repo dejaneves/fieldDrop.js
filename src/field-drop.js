@@ -91,7 +91,7 @@ class FieldDrop extends Emitter {
     // render
     element.appendChild(divContent);
     element.appendChild(divUpload);
-    element.appendChild(this.divProgress);
+    //element.appendChild(this.divProgress);
 
     // Get Element
     this.trigger = element.querySelector(this.options.selector);
