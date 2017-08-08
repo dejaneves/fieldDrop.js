@@ -187,7 +187,7 @@ var FieldDrop = function (_Emitter) {
 
     var _this = _possibleConstructorReturn(this, (FieldDrop.__proto__ || Object.getPrototypeOf(FieldDrop)).call(this));
 
-    _this.element = element;
+    _this.element = !element ? null : element;
     _this.trigger = null;
     _this.ajax = new _ajax2.default();
     _this.defaults = {
@@ -205,10 +205,6 @@ var FieldDrop = function (_Emitter) {
     _this.fieldDrop_content = '.field-drop--content';
     _this.fieldDrop_uploads = '.field-drop--uploads';
 
-    if (!_this.element) {
-      throw new Error('error');
-    }
-
     if (typeof _this.element === 'string') {
       _this.element = document.querySelector(_this.element);
     }
@@ -219,17 +215,14 @@ var FieldDrop = function (_Emitter) {
       _this.options = _this.defaults;
     }
 
-    _this.init();
+    if (_this.element) {
+      _this.mountTemplate(_this.element);
+      _this.bindEvent();
+    }
     return _this;
   }
 
   _createClass(FieldDrop, [{
-    key: 'init',
-    value: function init() {
-      this.mountTemplate(this.element);
-      this.bindEvent();
-    }
-  }, {
     key: 'createActionDelete',
     value: function createActionDelete(filename, responseServer) {
       this.emit('delete', filename, responseServer);
@@ -278,7 +271,7 @@ var FieldDrop = function (_Emitter) {
       // render
       element.appendChild(divContent);
       element.appendChild(divUpload);
-      element.appendChild(this.divProgress);
+      //element.appendChild(this.divProgress);
 
       // Get Element
       this.trigger = element.querySelector(this.options.selector);

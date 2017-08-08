@@ -1,0 +1,21 @@
+{
+  "name": "field-drop.js",
+  "description": "FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews",
+  "main": "dist/js/field-drop.min.js",
+  "authors": [
+    "Jaime Neves"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "upload"
+  ],
+  "homepage": "https://github.com/dejaneves/fieldDrop.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "bower.json",
+    "test",
+    "tests"
+  ]
+}

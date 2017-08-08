@@ -115,35 +115,36 @@
   </head>
   <body>
     <h1>Example FieldDrop.js</h1>
-    <script type="text/javascript" src="../dist/field-drop.js"></script>
+    <script type="text/javascript" src="../dist/field-drop.min.js"></script>
     <div class="drag-and-drop" id="image-drag-drop"></div>
 
     <script>
 
-      var fieldDrop = new FieldDrop('#image-drag-drop',{
-          url:'/upload',
-          deleteOptions: {
-            htmlText : 'Deletar'
-          }
-      });
+    var fieldDrop = new FieldDrop('#image-drag-drop');
 
+      // var fieldDrop = new FieldDrop('#image-drag-drop',{
+      //     url:'/upload',
+      //     deleteOptions: {
+      //       htmlText : 'Deletar'
+      //     }
+      // });
 
-      fieldDrop.on('send', function (files) {
-        var formData = new FormData();
-
-        // server send
-        formData.append("file", files[0]);
-        fieldDrop.sendFile(formData,function(res){
-          console.log(res);
-          var referenceName = files[0].name;
-          fieldDrop.setAttrItem(referenceName,res);
-        });
-      });
-
-      fieldDrop.on('delete', function (localFileName,responseServer) {
-        console.log('response server: ', responseServer);
-        console.log('Local file name: ', localFileName);
-      });
+      // fieldDrop.on('send', function (files) {
+      //   var formData = new FormData();
+      //
+      //   // server send
+      //   formData.append("file", files[0]);
+      //   fieldDrop.sendFile(formData,function(res){
+      //     //console.log('res ', res);
+      //     var referenceName = files[0].name;
+      //     fieldDrop.setAttrItem(referenceName,res);
+      //   });
+      // });
+      //
+      // fieldDrop.on('delete', function (localFileName,responseServer) {
+      //   console.log('response server: ', responseServer);
+      //   console.log('Local file name: ', localFileName);
+      // });
 
     </script>
   </body>
