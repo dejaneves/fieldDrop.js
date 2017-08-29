@@ -1,4 +1,19 @@
 export default class Ajax {
+
+  constructor(options) {
+
+    this.defaults = {
+      json:false
+    };
+
+    if (typeof options === 'object') {
+      this.options = Object.assign({}, this.defaults, options);
+    } else {
+      this.options = this.defaults;
+    }
+
+  }
+
   get(url, callback) {
     let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     xhr.open('GET', url);
@@ -34,13 +49,17 @@ export default class Ajax {
 
   upload(url, data, callback) {
     let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
-        progress = document.querySelector('progress');
+        progress = document.querySelector('progress'), options = this.options;
 
     xhr.open('POST', url);
 
     xhr.onreadystatechange = function() {
       if (xhr.readyState > 3 && xhr.status === 200) {
-        callback(xhr.responseText);
+        if(options.json)
+          callback(JSON.parse(xhr.responseText));
+        else
+          callback(xhr.responseText);
+
       } else {
         callback(xhr);
       }

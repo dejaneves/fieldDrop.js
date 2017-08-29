@@ -8,9 +8,10 @@ class FieldDrop extends Emitter {
 
     this.element = !element ? null : element;
     this.trigger = null;
-    this.ajax = new Ajax;
+    this.ajax = new Ajax();
     this.defaults = {
       url : '',
+      JSONResponse:false,
       selector: 'input[type="file"]',
       eventListener : 'change',
       deleteOptions : {
@@ -38,6 +39,10 @@ class FieldDrop extends Emitter {
       this.mountTemplate(this.element);
       this.bindEvent();
     }
+
+    if(this.options.JSONResponse)
+      this.ajax = new Ajax({json:true});
+
   }
 
   createActionDelete(filename,responseServer) {

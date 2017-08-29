@@ -1,6 +1,6 @@
 {
   "name": "field-drop.js",
-  "version": "0.0.1",
+  "version": "0.0.1-beta2",
   "description": "FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews",
   "main": "dist/js/field-drop.min.js",
   "scripts": {
