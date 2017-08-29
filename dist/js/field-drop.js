@@ -210,7 +210,6 @@ var FieldDrop = function (_Emitter) {
 
     _this.element = !element ? null : element;
     _this.trigger = null;
-    _this.ajax = new _ajax2.default();
     _this.defaults = {
       url: '',
       JSONResponse: false,
@@ -241,8 +240,6 @@ var FieldDrop = function (_Emitter) {
       _this.mountTemplate(_this.element);
       _this.bindEvent();
     }
-
-    if (_this.options.JSONResponse) _this.ajax = new _ajax2.default({ json: true });
 
     return _this;
   }
@@ -408,7 +405,8 @@ var FieldDrop = function (_Emitter) {
   }, {
     key: 'sendFile',
     value: function sendFile(formData, cb) {
-      var xhr = this.ajax.upload(this.options.url, formData, function (res) {
+      var ajax = this.options.JSONResponse ? new _ajax2.default({ json: true }) : new _ajax2.default();
+      var xhr = ajax.upload(this.options.url, formData, function (res) {
         cb(res);
       });
     }

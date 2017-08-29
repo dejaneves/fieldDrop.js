@@ -8,7 +8,6 @@ class FieldDrop extends Emitter {
 
     this.element = !element ? null : element;
     this.trigger = null;
-    this.ajax = new Ajax();
     this.defaults = {
       url : '',
       JSONResponse:false,
@@ -39,9 +38,6 @@ class FieldDrop extends Emitter {
       this.mountTemplate(this.element);
       this.bindEvent();
     }
-
-    if(this.options.JSONResponse)
-      this.ajax = new Ajax({json:true});
 
   }
 
@@ -203,7 +199,8 @@ class FieldDrop extends Emitter {
   }
 
   sendFile(formData,cb) {
-    let xhr = this.ajax.upload(this.options.url,formData,(res) => {
+    let ajax = this.options.JSONResponse ? new Ajax({json:true}) : new Ajax();
+    let xhr = ajax.upload(this.options.url,formData,(res) => {
       cb(res);
     });
   }
