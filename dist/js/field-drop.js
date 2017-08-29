@@ -1,3 +1,11 @@
+/*!
+ * Field Drop Js v0.0.1-beta2 (August 29th 2017)
+ * FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews
+ * 
+ * https://github.com/dejaneves/fieldDrop.js#readme
+ * 
+ * Licensed MIT © Jaime Neves
+ */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.FieldDrop = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 function E () {
   // Keep this empty so it's easier to inherit from
@@ -73,13 +81,25 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Ajax = function () {
-  function Ajax() {
+  function Ajax(options) {
     _classCallCheck(this, Ajax);
+
+    this.defaults = {
+      json: false
+    };
+
+    if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
+      this.options = Object.assign({}, this.defaults, options);
+    } else {
+      this.options = this.defaults;
+    }
   }
 
   _createClass(Ajax, [{
@@ -121,13 +141,14 @@ var Ajax = function () {
     key: 'upload',
     value: function upload(url, data, callback) {
       var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
-          progress = document.querySelector('progress');
+          progress = document.querySelector('progress'),
+          options = this.options;
 
       xhr.open('POST', url);
 
       xhr.onreadystatechange = function () {
         if (xhr.readyState > 3 && xhr.status === 200) {
-          callback(xhr.responseText);
+          if (options.json) callback(JSON.parse(xhr.responseText));else callback(xhr.responseText);
         } else {
           callback(xhr);
         }
@@ -189,9 +210,9 @@ var FieldDrop = function (_Emitter) {
 
     _this.element = !element ? null : element;
     _this.trigger = null;
-    _this.ajax = new _ajax2.default();
     _this.defaults = {
       url: '',
+      JSONResponse: false,
       selector: 'input[type="file"]',
       eventListener: 'change',
       deleteOptions: {
@@ -219,6 +240,7 @@ var FieldDrop = function (_Emitter) {
       _this.mountTemplate(_this.element);
       _this.bindEvent();
     }
+
     return _this;
   }
 
@@ -383,7 +405,8 @@ var FieldDrop = function (_Emitter) {
   }, {
     key: 'sendFile',
     value: function sendFile(formData, cb) {
-      var xhr = this.ajax.upload(this.options.url, formData, function (res) {
+      var ajax = this.options.JSONResponse ? new _ajax2.default({ json: true }) : new _ajax2.default();
+      var xhr = ajax.upload(this.options.url, formData, function (res) {
         cb(res);
       });
     }

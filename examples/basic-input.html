@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Example FieldDrop.js</title>
+    <link rel="stylesheet" href="../dist/css/field-drop.css">
+  </head>
+  <body>
+    <h1>Example FieldDrop.js</h1>
+    <script type="text/javascript" src="../dist/js/field-drop.min.js"></script>
+    <div class="drag-and-drop" id="image-drag-drop"></div>
+    <progress value="" max=""></progress>
+    <input type="file">
+    <script>
+      var formData = new FormData(), input = document.querySelector('input[type="file"]');
+      var fieldDrop = new FieldDrop('',{
+        url:'http://172.17.72.2:8192/aps-dia/arquivos/upload/1',
+        JSONResponse:true
+      });
+
+      input.addEventListener('change',function(event){
+        event.preventDefault();
+        var files = event.target.files;
+
+        formData.append("file", files[0]);
+        fieldDrop.sendFile(formData, function (res) {
+          console.log((res));
+        });
+      },false);
+
+    </script>
+  </body>
+</html>
