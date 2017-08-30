@@ -2,16 +2,13 @@ export default class Ajax {
 
   constructor(options) {
 
-    this.defaults = {
-      json:false
-    };
+    this.defaults = {};
 
     if (typeof options === 'object') {
       this.options = Object.assign({}, this.defaults, options);
     } else {
       this.options = this.defaults;
     }
-
   }
 
   get(url, callback) {
@@ -47,38 +44,35 @@ export default class Ajax {
     return xhr;
   }
 
-  upload(url, data, callback) {
-    let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
-        progress = document.querySelector('progress'), options = this.options;
+  upload(url, data) {
+    return new Promise((resolve,reject) => {
+      let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+      let progress = document.querySelector('progress');
 
-    xhr.open('POST', url);
+      xhr.open('POST', url);
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState > 3 && xhr.status === 200) {
-        if(options.json)
-          callback(JSON.parse(xhr.responseText));
+      xhr.onprogress = (event) => {
+        if (event.lengthComputable) {
+          var complete = (event.loaded / event.total * 100 | 0);
+          progress.value = progress.innerHTML = complete;
+        }
+      };
+
+      xhr.onload = () => {
+        progress.value = progress.innerHTML = 100;
+
+        if(xhr.status === 200)
+          resolve(xhr.responseText);
         else
-          callback(xhr.responseText);
+          reject(Error(req.statusText));
+      };
 
-      } else {
-        callback(xhr);
-      }
-    };
+      xhr.onerror = () => reject(xhr.statusText);
 
-    xhr.onprogress = function (event) {
-      if (event.lengthComputable) {
-        var complete = (event.loaded / event.total * 100 | 0);
-        progress.value = progress.innerHTML = complete;
-      }
-    };
-
-    xhr.onload = function() {
-      progress.value = progress.innerHTML = 100;
-    };
-
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.send(data);
-
-    return xhr;
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.send(data);
+      return xhr;
+    });
   }
+
 }

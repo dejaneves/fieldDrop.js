@@ -10,7 +10,6 @@ class FieldDrop extends Emitter {
     this.trigger = null;
     this.defaults = {
       url : '',
-      JSONResponse:false,
       selector: 'input[type="file"]',
       eventListener : 'change',
       deleteOptions : {
@@ -199,9 +198,13 @@ class FieldDrop extends Emitter {
   }
 
   sendFile(formData,cb) {
-    let ajax = this.options.JSONResponse ? new Ajax({json:true}) : new Ajax();
-    let xhr = ajax.upload(this.options.url,formData,(res) => {
-      cb(res);
+    let ajax = new Ajax();
+    return new Promise((resolve,reject)=>{
+      ajax.upload(this.options.url,formData).then(function(res){
+        resolve(res);
+      },function(error){
+        reject(error)
+      });
     });
   }
 
