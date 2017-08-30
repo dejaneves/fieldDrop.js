@@ -10,24 +10,40 @@
     <script type="text/javascript" src="../dist/js/field-drop.min.js"></script>
     <div class="drag-and-drop" id="image-drag-drop"></div>
     <progress value="" max=""></progress>
-    <input type="file">
+    <input type="file" multiple>
+    <button type="button">Send</button>
     <script>
-      var formData = new FormData(), input = document.querySelector('input[type="file"]');
+    	var formData   = new FormData(),
+    			inputFile  = document.querySelector('input[type="file"]'),
+    			buttonSend = document.querySelector('button[type="button"]');
+
+    	// Instance FieldDrop
       var fieldDrop = new FieldDrop('',{
-        url:'http://172.17.72.2:8192/aps-dia/arquivos/upload/1',
-        JSONResponse:true
+        url:'',
       });
 
-      input.addEventListener('change',function(event){
-        event.preventDefault();
+			BendEvents();      
+
+      function BendEvents() {
+      	buttonSend.addEventListener('click',Send,false);
+      	inputFile.addEventListener('change',Prepare,false);	
+      }
+
+      function Prepare(event) {
+      	event.preventDefault();
         var files = event.target.files;
 
-        formData.append("file", files[0]);
-        fieldDrop.sendFile(formData, function (res) {
-          console.log((res));
-        });
-      },false);
+        for (var i = 0; i < files.length; i++) {
+          formData.append("file", files[i]);
+        }
+      }
 
+      function Send(event) {
+        fieldDrop.sendFile(formData).then(function(res){
+          var data = JSON.parse(res);
+          console.log(data);
+        });
+      }
     </script>
   </body>
 </html>

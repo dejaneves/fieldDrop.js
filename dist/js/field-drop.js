@@ -1,5 +1,5 @@
 /*!
- * Field Drop Js v0.0.1-beta2 (August 29th 2017)
+ * Field Drop Js v0.0.1-beta3 (August 30th 2017)
  * FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews
  * 
  * https://github.com/dejaneves/fieldDrop.js#readme
@@ -91,9 +91,7 @@ var Ajax = function () {
   function Ajax(options) {
     _classCallCheck(this, Ajax);
 
-    this.defaults = {
-      json: false
-    };
+    this.defaults = {};
 
     if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {
       this.options = Object.assign({}, this.defaults, options);
@@ -139,36 +137,34 @@ var Ajax = function () {
     }
   }, {
     key: 'upload',
-    value: function upload(url, data, callback) {
-      var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
-          progress = document.querySelector('progress'),
-          options = this.options;
+    value: function upload(url, data) {
+      return new Promise(function (resolve, reject) {
+        var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+        var progress = document.querySelector('progress');
 
-      xhr.open('POST', url);
+        xhr.open('POST', url);
 
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState > 3 && xhr.status === 200) {
-          if (options.json) callback(JSON.parse(xhr.responseText));else callback(xhr.responseText);
-        } else {
-          callback(xhr);
-        }
-      };
+        xhr.onprogress = function (event) {
+          if (event.lengthComputable) {
+            var complete = event.loaded / event.total * 100 | 0;
+            progress.value = progress.innerHTML = complete;
+          }
+        };
 
-      xhr.onprogress = function (event) {
-        if (event.lengthComputable) {
-          var complete = event.loaded / event.total * 100 | 0;
-          progress.value = progress.innerHTML = complete;
-        }
-      };
+        xhr.onload = function () {
+          progress.value = progress.innerHTML = 100;
 
-      xhr.onload = function () {
-        progress.value = progress.innerHTML = 100;
-      };
+          if (xhr.status === 200) resolve(xhr.responseText);else reject(Error(req.statusText));
+        };
 
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      xhr.send(data);
+        xhr.onerror = function () {
+          return reject(xhr.statusText);
+        };
 
-      return xhr;
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(data);
+        return xhr;
+      });
     }
   }]);
 
@@ -212,7 +208,6 @@ var FieldDrop = function (_Emitter) {
     _this.trigger = null;
     _this.defaults = {
       url: '',
-      JSONResponse: false,
       selector: 'input[type="file"]',
       eventListener: 'change',
       deleteOptions: {
@@ -405,9 +400,15 @@ var FieldDrop = function (_Emitter) {
   }, {
     key: 'sendFile',
     value: function sendFile(formData, cb) {
-      var ajax = this.options.JSONResponse ? new _ajax2.default({ json: true }) : new _ajax2.default();
-      var xhr = ajax.upload(this.options.url, formData, function (res) {
-        cb(res);
+      var _this4 = this;
+
+      var ajax = new _ajax2.default();
+      return new Promise(function (resolve, reject) {
+        ajax.upload(_this4.options.url, formData).then(function (res) {
+          resolve(res);
+        }, function (error) {
+          reject(error);
+        });
       });
     }
   }, {
