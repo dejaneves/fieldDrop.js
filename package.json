@@ -1,7 +1,7 @@
 {
   "name": "field-drop.js",
-  "version": "0.0.1-beta3",
-  "description": "FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews",
+  "version": "0.0.1-beta4",
+  "description": "FieldDrop.js is an JavaScript library that provides file uploads",
   "main": "dist/js/field-drop.min.js",
   "scripts": {
     "build-debug": "browserify src/field-drop.js -s FieldDrop -t [babelify] -p [browserify-banner --file .banner ] -o dist/js/field-drop.js",
