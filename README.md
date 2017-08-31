@@ -27,7 +27,7 @@ First, include the script located on the `dist` folder.
 
 ## Examples
 
-### Input File Basic
+### Basic Input File
 
 ```html
 <progress value="" max=""></progress>
