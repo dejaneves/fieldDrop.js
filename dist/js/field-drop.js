@@ -1,6 +1,6 @@
 /*!
- * Field Drop Js v0.0.1-beta3 (August 30th 2017)
- * FieldDrop.js is an JavaScript library that provides drag and drop file uploads with image previews
+ * Field Drop Js v0.0.1-beta4 (August 30th 2017)
+ * FieldDrop.js is an JavaScript library that provides file uploads
  * 
  * https://github.com/dejaneves/fieldDrop.js#readme
  * 
@@ -154,7 +154,7 @@ var Ajax = function () {
         xhr.onload = function () {
           progress.value = progress.innerHTML = 100;
 
-          if (xhr.status === 200) resolve(xhr.responseText);else reject(Error(req.statusText));
+          if (xhr.status === 200) resolve(xhr.responseText);else reject(Error(xhr.statusText));
         };
 
         xhr.onerror = function () {

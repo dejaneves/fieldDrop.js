@@ -64,7 +64,7 @@ export default class Ajax {
         if(xhr.status === 200)
           resolve(xhr.responseText);
         else
-          reject(Error(req.statusText));
+          reject(Error(xhr.statusText));
       };
 
       xhr.onerror = () => reject(xhr.statusText);

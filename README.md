@@ -12,6 +12,36 @@ First, include the script located on the `dist` folder.
 <script src="dist/field-drop.min.js"></script>
 ```
 
+## Examples
+
+### Input File Basic
+
+```javascript
+
+// Instance FieldDrop
+var fieldDrop = new FieldDrop('',{ url:'/uploads'}),
+    formData  = new FormData();
+
+document.querySelector('input[type="file"]')
+  .addEventListener('change',function() {
+    event.preventDefault();
+    var files = event.target.files;
+
+    for (var i = 0; i < files.length; i++) {
+      formData.append("file", files[i]);
+    }
+},false);
+
+document.querySelector('button[type="button"]')
+  .addEventListener('click',function(event) {
+    fieldDrop.sendFile(formData).then(function(res){
+      var data = JSON.parse(res);
+      console.log(data);
+    });
+},false);
+
+```
+
 
 ## License
 

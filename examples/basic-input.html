@@ -13,37 +13,29 @@
     <input type="file" multiple>
     <button type="button">Send</button>
     <script>
-    	var formData   = new FormData(),
-    			inputFile  = document.querySelector('input[type="file"]'),
-    			buttonSend = document.querySelector('button[type="button"]');
 
     	// Instance FieldDrop
-      var fieldDrop = new FieldDrop('',{
-        url:'',
-      });
+      var fieldDrop = new FieldDrop('',{url:'/upload'}),
+          formData  = new FormData();
 
-			BendEvents();      
+      document.querySelector('input[type="file"]')
+        .addEventListener('change',function() {
 
-      function BendEvents() {
-      	buttonSend.addEventListener('click',Send,false);
-      	inputFile.addEventListener('change',Prepare,false);	
-      }
+          event.preventDefault();
+          var files = event.target.files;
 
-      function Prepare(event) {
-      	event.preventDefault();
-        var files = event.target.files;
+          for (var i = 0; i < files.length; i++) {
+            formData.append("file", files[i]);
+          }
+      },false);
 
-        for (var i = 0; i < files.length; i++) {
-          formData.append("file", files[i]);
-        }
-      }
-
-      function Send(event) {
-        fieldDrop.sendFile(formData).then(function(res){
-          var data = JSON.parse(res);
-          console.log(data);
-        });
-      }
+      document.querySelector('button[type="button"]')
+        .addEventListener('click',function(event) {
+          fieldDrop.sendFile(formData).then(function(res){
+            var data = JSON.parse(res);
+            console.log(data);
+          });
+      },false);
     </script>
   </body>
 </html>
