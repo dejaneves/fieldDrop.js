@@ -33,6 +33,12 @@ class FieldDrop extends Emitter {
       this.options = this.defaults;
     }
 
+    if (typeof options === 'object') {
+      this.options = Object.assign({}, this.defaults, options);
+    } else {
+      this.options = this.defaults;
+    }
+
     if (this.element) {
       this.mountTemplate(this.element);
       this.bindEvent();
