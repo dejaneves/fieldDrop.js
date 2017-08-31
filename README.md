@@ -29,6 +29,12 @@ First, include the script located on the `dist` folder.
 
 ### Input File Basic
 
+```html
+<progress value="" max=""></progress>
+<input type="file" multiple>
+<button type="button">Send</button>
+```
+
 ```javascript
 
 // Instance FieldDrop
