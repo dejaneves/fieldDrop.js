@@ -2,7 +2,20 @@
 
 [![BCH compliance](https://bettercodehub.com/edge/badge/dejaneves/fieldDrop.js?branch=master)](https://bettercodehub.com/)
 
-**FieldDrop.js** is an JavaScript library that provides drag and drop file uploads with image previews
+**FieldDrop.js** is an JavaScript library that provides files upload.
+
+## Install
+
+### Bower
+
+```
+bower install fieldDrop.js --save
+```
+### NPM
+
+```
+npm install field-drop.js --save
+```
 
 ## Usage
 
